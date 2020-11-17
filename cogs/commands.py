@@ -14,7 +14,7 @@ class Commands(commands.Cog):
     # Clears a given number of lines. 1 being the default if no number is given as parameter
     @commands.command()
     async def clear(self, ctx, amount=1):
-        await self.ctx.channel.purge(limit=amount)
+        await ctx.channel.purge(limit=amount + 1)
 
 
 def setup(client):

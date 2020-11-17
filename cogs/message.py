@@ -1,6 +1,8 @@
 import discord
-from urllib.request import urlopen
+import requests
 from discord.ext import commands
+
+welcome_channel_id = 778322115010494544
 
 
 class Message(commands.Cog):
@@ -21,12 +23,17 @@ class Message(commands.Cog):
             await message.channel.send(
                 'Hey! Here are the :rotating_light: top 10 :boom: reasons to use VSCode: \n(null)'
             )
-
-        # elif client.event.channel.name == 'welcome':
-        #     if message.content.startswith('/nick'):
-        #         nick = message.split()
-        #         url = 'https://cdn.intra.42.fr/users/%7B0%7D.jpg', nick[1]
-        #         check = urllib.urlopen(url)
+        elif message.channel.id == welcome_channel_id:
+            if message.content.startswith('.nick'):
+                nick = message.content.split()
+                url = 'https://cdn.intra.42.fr/users/{}.jpg'.format(nick[1])
+                # await message.channel.send(url)
+                # await message.channel.send(requests.get(url).status_code)
+                if requests.get(url).status_code == 200:
+                    await message.channel.send("You actually did the piscine!")
+                    await message.author.edit(nick=nick[1])
+                else:
+                    await message.channel.send("Login not valid")
 
         # Line needed at the end of @client.event if we want to run @commands.command in this file
         # await self.client.process_commands(message)
