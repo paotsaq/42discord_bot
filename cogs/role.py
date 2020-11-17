@@ -7,7 +7,7 @@ class Roles(commands.Cog):
     def __init__(self, client):
         self.client = client
 
-    @commands.Cog.Listener()
+    @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
         massage_id = patload.message_id
         if message_id == 778231967761563669:
@@ -20,7 +20,7 @@ class Roles(commands.Cog):
             if memeber is not None:
                 await member.add_roles(role)
 
-    @commands.Cog.Listener()
+    @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
         massage_id = patload.message_id
         if message_id == 778231967761563669:
@@ -33,7 +33,7 @@ class Roles(commands.Cog):
             if memeber is not None:
                 await member.remove_roles(role)
 
-    @commands.Cog.Listener()
+    @commands.Cog.listener()
     async def on_raw_reaction_remove(self, payload):
         pass
 
