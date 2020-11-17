@@ -8,7 +8,7 @@ class Roles(commands.Cog):
         self.client = client
 
     @commands.Cog.Listener()
-    async def on_raw_reaction_add(payload):
+    async def on_raw_reaction_add(self, payload):
         massage_id = patload.message_id
         if message_id == 778231967761563669:
             guild_id = payload.guild_id
@@ -21,7 +21,7 @@ class Roles(commands.Cog):
                 await member.add_roles(role)
 
     @commands.Cog.Listener()
-    async def on_raw_reaction_add(payload):
+    async def on_raw_reaction_add(self, payload):
         massage_id = patload.message_id
         if message_id == 778231967761563669:
             guild_id = payload.guild_id
@@ -34,7 +34,7 @@ class Roles(commands.Cog):
                 await member.remove_roles(role)
 
     @commands.Cog.Listener()
-    async def on_raw_reaction_remove(payload):
+    async def on_raw_reaction_remove(self, payload):
         pass
 
 def setup(client):
