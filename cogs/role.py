@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 # Line of code not needed as the bot.py already does it
-# client = discord.Client()
+client = discord.Client()
 
 class Roles(commands.Cog):
     def __init__(self, client):
@@ -9,7 +9,7 @@ class Roles(commands.Cog):
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
-        massage_id = patload.message_id
+        message_id = payload.message_id
         if message_id == 778231967761563669:
             guild_id = payload.guild_id
             guild = discord.utils.find(lambda g : g.id == guild_id, client.guilds)
@@ -17,12 +17,12 @@ class Roles(commands.Cog):
 
         if role is not None:
             member = discord.utils.find(lambda m : m.id == payload.user_id, guild.members)
-            if memeber is not None:
+            if member is not None:
                 await member.add_roles(role)
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
-        massage_id = patload.message_id
+        message_id = payload.message_id
         if message_id == 778231967761563669:
             guild_id = payload.guild_id
             guild = discord.utils.find(lambda g : g.id == guild_id, client.guilds)
@@ -30,7 +30,7 @@ class Roles(commands.Cog):
 
         if role is not None:
             member = discord.utils.find(lambda m : m.id == payload.user_id, guild.members)
-            if memeber is not None:
+            if member is not None:
                 await member.remove_roles(role)
 
     @commands.Cog.listener()
