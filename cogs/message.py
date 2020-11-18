@@ -3,6 +3,7 @@ import requests
 from discord.ext import commands
 
 welcome_channel_id = 778322115010494544
+piscineux_role_id = 778556642287026177
 
 
 class Message(commands.Cog):
@@ -25,13 +26,14 @@ class Message(commands.Cog):
             )
         elif message.channel.id == welcome_channel_id:
             if message.content.startswith('.nick'):
+                role = discord.utils.get(message.author.guild.roles,
+                                         id=piscineux_role_id)
                 nick = message.content.split()
                 url = 'https://cdn.intra.42.fr/users/{}.jpg'.format(nick[1])
-                # await message.channel.send(url)
-                # await message.channel.send(requests.get(url).status_code)
                 if requests.get(url).status_code == 200:
                     await message.channel.send("You actually did the piscine!")
                     await message.author.edit(nick=nick[1])
+                    await message.author.add_roles(role)
                 else:
                     await message.channel.send("Login not valid")
 
