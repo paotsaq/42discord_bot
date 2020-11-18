@@ -2,7 +2,7 @@
 
 ## How to bring our baby Moulinette to life 🤖
 
-* Run `python -m pip install -r requirements.txt` to download the dependencies
+* Run `python3 -m pip install -r requirements.txt` to download the dependencies
 * Run `source discord_env/bin/activate` at the root of the repo.
 * `python3 bot.py` 
 

@@ -6,6 +6,13 @@ from discord.ext import commands
 # client = discord.Client()
 client = commands.Bot(command_prefix = '.')
 
+intents = discord.Intents.default()
+intents.members = True
+
+@client.event
+async def on_member_join(member):
+	await member.send("Welcome!")
+
 @client.command()
 async def load(ctx, extension):
 	client.load_extension(f'cogs.{extension}')

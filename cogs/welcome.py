@@ -1,5 +1,6 @@
 import discord
 import requests
+import time
 from discord.ext import commands
 
 welcome_channel_id = 778322115010494544
@@ -16,11 +17,18 @@ class Welcome(commands.Cog):
 	welcome_message_id = 0
 
 	@commands.Cog.listener()
-	async def on_member_join(member):
-		print("test")
-		role = discord.utils.get(member.server.roles, id=visitor_role_id)
-		print(role)
-		await commands.add_roles(member, role)
+	async def on_member_join(self, member):
+		channel = member.guild.system_channel
+		if channel is not None:
+			await channel.send('Welcome {0.mention}.'.format(member))
+	# async def on_member_join(self, member):
+	# 	channel = member.guild.system_channel
+	# 	if channel is not None:
+	# 		await channel.send('Welcome {0.mention}.'.format(member))
+		# print("test")
+		# role = discord.utils.get(member.server.roles, id=visitor_role_id)
+		# print(role)
+		# await discord.Member.add_roles(member, role)
 
 	@commands.Cog.listener()
 	async def on_ready(self, channel: discord.TextChannel = None):
@@ -38,16 +46,20 @@ class Welcome(commands.Cog):
 		await message.add_reaction('<:order:778315568612638730>')
 
 	@commands.command()
-	async def kinit(self, ctx, login="test"):
+	async def kinit(self, ctx, login="404"):
+		await ctx.channel.purge(limit=1)
 		role = discord.utils.get(ctx.author.guild.roles, id=piscineux_role_id)
 		url = 'https://cdn.intra.42.fr/users/{}.jpg'.format(login)
 		if requests.get(url).status_code == 200:
-			await message.channel.send("<:success:778612467567558667>")
-			await message.author.edit(nick=login)
-			await message.author.add_roles(role)
-			print(message)
+			await ctx.message.author.edit(nick=login)
+			await ctx.message.author.add_roles(role)
+			await ctx.send("<:success:778612467567558667>")
+			time.sleep(1)
+			await ctx.channel.purge(limit=1)
 		else:
-			await message.channel.send("Login not valid")
+			await ctx.send("Login not valid")
+			time.sleep(2)
+			await ctx.channel.purge(limit=1)
 
 
 def setup(client):
