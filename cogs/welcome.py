@@ -13,6 +13,8 @@ class Welcome(commands.Cog):
     def __init__(self, client):
         self.client = client
 
+    welcome_message_id = 0
+
     @commands.Cog.listener()
     async def on_member_join(member):
         print("test")
@@ -23,12 +25,17 @@ class Welcome(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self, channel: discord.TextChannel = None):
         channel = discord.utils.get(self.client.get_all_channels(),
-                                    name='welcome')
+                                    id=welcome_channel_id)
         count = 0
         async for message in channel.history(limit=None):
             count += 1
         if count == 0:
-            await channel.send(welcome_message)
+            message = await channel.send(welcome_message)
+            welcome_message_id = message.id
+        await message.add_reaction('<:alliance:778315592368914464>')
+        await message.add_reaction('<:assembly:778315588481187900>')
+        await message.add_reaction('<:federation:778315572583989258>')
+        await message.add_reaction('<:order:778315568612638730>')
 
 
 def setup(client):
