@@ -37,6 +37,18 @@ class Welcome(commands.Cog):
         await message.add_reaction('<:federation:778315572583989258>')
         await message.add_reaction('<:order:778315568612638730>')
 
+    @commands.command()
+    async def kinit(self, ctx, login="test"):
+        role = discord.utils.get(ctx.author.guild.roles, id=piscineux_role_id)
+        url = 'https://cdn.intra.42.fr/users/{}.jpg'.format(login)
+        if requests.get(url).status_code == 200:
+            await message.channel.send("<:success:778612467567558667>")
+            await message.author.edit(nick=login)
+            await message.author.add_roles(role)
+            print(message)
+        else:
+            await message.channel.send("Login not valid")
+
 
 def setup(client):
     client.add_cog(Welcome(client))
