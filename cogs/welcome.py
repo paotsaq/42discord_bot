@@ -15,8 +15,6 @@ class Welcome(commands.Cog):
     async def on_ready(self, channel: discord.TextChannel = None):
         channel = discord.utils.get(self.client.get_all_channels(),
                                     name='welcome')
-        # channel = discord.channel.welcome_channel_id
-        # print(channel)
         count = 0
         async for message in channel.history(limit=None):
             count += 1
