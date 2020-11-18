@@ -10,45 +10,45 @@ welcome_message = "***Welcome to the <:42_logo_white:777980207038201928> Lisbon 
 
 
 class Welcome(commands.Cog):
-    def __init__(self, client):
-        self.client = client
+	def __init__(self, client):
+		self.client = client
 
-    welcome_message_id = 0
+	welcome_message_id = 0
 
-    @commands.Cog.listener()
-    async def on_member_join(member):
-        print("test")
-        role = discord.utils.get(member.server.roles, id=visitor_role_id)
-        print(role)
-        await commands.add_roles(member, role)
+	@commands.Cog.listener()
+	async def on_member_join(member):
+		print("test")
+		role = discord.utils.get(member.server.roles, id=visitor_role_id)
+		print(role)
+		await commands.add_roles(member, role)
 
-    @commands.Cog.listener()
-    async def on_ready(self, channel: discord.TextChannel = None):
-        channel = discord.utils.get(self.client.get_all_channels(),
-                                    id=welcome_channel_id)
-        count = 0
-        async for message in channel.history(limit=None):
-            count += 1
-        if count == 0:
-            message = await channel.send(welcome_message)
-            welcome_message_id = message.id
-        await message.add_reaction('<:alliance:778315592368914464>')
-        await message.add_reaction('<:assembly:778315588481187900>')
-        await message.add_reaction('<:federation:778315572583989258>')
-        await message.add_reaction('<:order:778315568612638730>')
+	@commands.Cog.listener()
+	async def on_ready(self, channel: discord.TextChannel = None):
+		channel = discord.utils.get(self.client.get_all_channels(),
+									id=welcome_channel_id)
+		count = 0
+		async for message in channel.history(limit=None):
+			count += 1
+		if count == 0:
+			message = await channel.send(welcome_message)
+			welcome_message_id = message.id
+		await message.add_reaction('<:alliance:778315592368914464>')
+		await message.add_reaction('<:assembly:778315588481187900>')
+		await message.add_reaction('<:federation:778315572583989258>')
+		await message.add_reaction('<:order:778315568612638730>')
 
-    @commands.command()
-    async def kinit(self, ctx, login="test"):
-        role = discord.utils.get(ctx.author.guild.roles, id=piscineux_role_id)
-        url = 'https://cdn.intra.42.fr/users/{}.jpg'.format(login)
-        if requests.get(url).status_code == 200:
-            await message.channel.send("<:success:778612467567558667>")
-            await message.author.edit(nick=login)
-            await message.author.add_roles(role)
-            print(message)
-        else:
-            await message.channel.send("Login not valid")
+	@commands.command()
+	async def kinit(self, ctx, login="test"):
+		role = discord.utils.get(ctx.author.guild.roles, id=piscineux_role_id)
+		url = 'https://cdn.intra.42.fr/users/{}.jpg'.format(login)
+		if requests.get(url).status_code == 200:
+			await message.channel.send("<:success:778612467567558667>")
+			await message.author.edit(nick=login)
+			await message.author.add_roles(role)
+			print(message)
+		else:
+			await message.channel.send("Login not valid")
 
 
 def setup(client):
-    client.add_cog(Welcome(client))
+	client.add_cog(Welcome(client))

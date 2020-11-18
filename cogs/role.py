@@ -4,38 +4,38 @@ from discord.ext import commands
 client = discord.Client()
 
 class Roles(commands.Cog):
-    def __init__(self, client):
-        self.client = client
+	def __init__(self, client):
+		self.client = client
 
-    @commands.Cog.listener()
-    async def on_raw_reaction_add(self, payload):
-        message_id = payload.message_id
-        if message_id == 778231967761563669:
-            guild_id = payload.guild_id
-            guild = discord.utils.find(lambda g : g.id == guild_id, client.guilds)
-            role = discord.utils.get(guild.roles, name=payload.emoji.name)  
+	@commands.Cog.listener()
+	async def on_raw_reaction_add(self, payload):
+		message_id = payload.message_id
+		if message_id == 778231967761563669:
+			guild_id = payload.guild_id
+			guild = discord.utils.find(lambda g : g.id == guild_id, client.guilds)
+			role = discord.utils.get(guild.roles, name=payload.emoji.name)
 
-        if role is not None:
-            member = discord.utils.find(lambda m : m.id == payload.user_id, guild.members)
-            if member is not None:
-                await member.add_roles(role)
+		if role is not None:
+			member = discord.utils.find(lambda m : m.id == payload.user_id, guild.members)
+			if member is not None:
+				await member.add_roles(role)
 
-    @commands.Cog.listener()
-    async def on_raw_reaction_add(self, payload):
-        message_id = payload.message_id
-        if message_id == 778231967761563669:
-            guild_id = payload.guild_id
-            guild = discord.utils.find(lambda g : g.id == guild_id, client.guilds)
-            role = discord.utils.get(guild.roles, name=payload.emoji.name)  
+	@commands.Cog.listener()
+	async def on_raw_reaction_add(self, payload):
+		message_id = payload.message_id
+		if message_id == 778231967761563669:
+			guild_id = payload.guild_id
+			guild = discord.utils.find(lambda g : g.id == guild_id, client.guilds)
+			role = discord.utils.get(guild.roles, name=payload.emoji.name)
 
-        if role is not None:
-            member = discord.utils.find(lambda m : m.id == payload.user_id, guild.members)
-            if member is not None:
-                await member.remove_roles(role)
+		if role is not None:
+			member = discord.utils.find(lambda m : m.id == payload.user_id, guild.members)
+			if member is not None:
+				await member.remove_roles(role)
 
-    @commands.Cog.listener()
-    async def on_raw_reaction_remove(self, payload):
-        pass
+	@commands.Cog.listener()
+	async def on_raw_reaction_remove(self, payload):
+		pass
 
 def setup(client):
-    client.add_cog(Roles(client))
+	client.add_cog(Roles(client))

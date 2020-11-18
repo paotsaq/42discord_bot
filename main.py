@@ -4,33 +4,33 @@ from discord.ext import commands, tasks
 from itertools import cycle
 
 status = cycle([
-    'chess with Norminette', 'csgo  with Norminette', 'lol with Norminette',
-    'Among Us with Norminette'
+	'chess with Norminette', 'csgo  with Norminette', 'lol with Norminette',
+	'Among Us with Norminette'
 ])
 
 
 class Main(commands.Cog):
-    def __init__(self, client):
-        self.client = client
+	def __init__(self, client):
+		self.client = client
 
-    @commands.Cog.listener()
-    async def on_ready(self):
-        self.change_status.start()
-        print('We have logged in as {0.user}'.format(self.client))
+	@commands.Cog.listener()
+	async def on_ready(self):
+		self.change_status.start()
+		print('We have logged in as {0.user}'.format(self.client))
 
-    @tasks.loop(seconds=10)
-    async def change_status(self):
-        await self.client.change_presence(activity=discord.Game(next(status)))
+	@tasks.loop(seconds=10)
+	async def change_status(self):
+		await self.client.change_presence(activity=discord.Game(next(status)))
 
-    # Just playing around with commands
-    # Actually I don't think we need it for what we discussed as /nick is already a Discord command. Still handy mecanism for a bot to have
-    @commands.command()
-    async def ping(self, ctx):
-        await ctx.send('Pong!')
+	# Just playing around with commands
+	# Actually I don't think we need it for what we discussed as /nick is already a Discord command. Still handy mecanism for a bot to have
+	@commands.command()
+	async def ping(self, ctx):
+		await ctx.send('Pong!')
 
 
 def setup(client):
-    client.add_cog(Main(client))
+	client.add_cog(Main(client))
 
 
 # Clears a given number of lines. 1 being the default if no number is given as parameter
