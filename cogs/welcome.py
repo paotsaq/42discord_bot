@@ -66,25 +66,15 @@ class Welcome(commands.Cog):
 	async def on_raw_reaction_add(self, payload):
 		if payload.message_id == self.reaction_message.id:
 			role = discord.utils.get(payload.member.guild.roles, id=houses[payload.emoji.name])
-			# print(role)
 			await payload.member.add_roles(role)
 
 	@commands.Cog.listener()
 	async def on_raw_reaction_remove(self, payload):
 		if payload.message_id == self.reaction_message.id:
-			# member = self.get_member(payload.user_id)
-			# member = discord.utils.get(self.client.get_all_members(), id=payload.user_id)
-			member = await self.client.fetch_user(payload.user_id)
-			# print(member)
-			# print(payload.user_id)
-			# guild = self.client.get_guild(discord.server)
-			# member = guild.get_member(payload.user_id)
-			# member = discord.utils.get(discord.Member, id=payload.user_id)
-			# print("test")
-			# role = await .Guild.get_role(self, role_id=houses[payload.emoji.name])
-			# role = discord.utils.get(member.guild.roles, id=houses[payload.emoji.name])
-			# print(role)
-			# await member.remove_roles(role)
+			self.client.guild = self.client.get_guild(777686265600540682)
+			role = self.client.guild.get_role(houses[payload.emoji.name])
+			member = self.client.guild.get_member(payload.user_id)
+			await member.remove_roles(role)
 
 def setup(client):
 	client.add_cog(Welcome(client))

@@ -4,7 +4,9 @@ from discord.ext import commands
 
 # The second client assignation seems to work as the first but also allows to set the command prefix
 # client = discord.Client()
-client = commands.Bot(command_prefix = '.')
+intents = discord.Intents().all()
+client = commands.Bot(command_prefix = '.', intents=intents)
+
 
 @client.command()
 async def load(ctx, extension):
