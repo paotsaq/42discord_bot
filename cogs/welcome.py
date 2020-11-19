@@ -24,21 +24,6 @@ class Welcome(commands.Cog):
 	def __init__(self, client):
 		self.client = client
 
-
-	@commands.Cog.listener()
-	async def on_member_join(self, member):
-		channel = member.guild.system_channel
-		if channel is not None:
-			await channel.send('Welcome {0.mention}.'.format(member))
-	# async def on_member_join(self, member):
-	# 	channel = member.guild.system_channel
-	# 	if channel is not None:
-	# 		await channel.send('Welcome {0.mention}.'.format(member))
-		# print("test")
-		# role = discord.utils.get(member.server.roles, id=visitor_role_id)
-		# print(role)
-		# await discord.Member.add_roles(member, role)
-
 	@commands.Cog.listener()
 	async def on_ready(self, channel: discord.TextChannel = None):
 		channel = discord.utils.get(self.client.get_all_channels(),

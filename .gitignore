@@ -3,3 +3,4 @@ token.txt
 **.ignore
 **.pdf
 **pycache**
+**.pyc
