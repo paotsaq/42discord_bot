@@ -1,3 +1,7 @@
+# What this modules does:
+# - Displays message if the bot is online
+# - Adds a status to the bot and cycles through several status
+
 import discord
 from discord.ext import commands, tasks
 from itertools import cycle
@@ -6,7 +10,6 @@ status = cycle([
 	'chess with Norminette', 'csgo  with Norminette', 'lol with Norminette',
 	'Among Us with Norminette'
 ])
-
 
 class Ready(commands.Cog):
 	def __init__(self, client):
@@ -20,7 +23,6 @@ class Ready(commands.Cog):
 	@tasks.loop(seconds=10)
 	async def change_status(self):
 		await self.client.change_presence(activity=discord.Game(next(status)))
-
 
 def setup(client):
 	client.add_cog(Ready(client))

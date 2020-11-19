@@ -1,6 +1,8 @@
+# What this modules does:
+# - Sends funny messages to users based on their message
+
 import discord
 from discord.ext import commands
-
 
 class Message(commands.Cog):
 	def __init__(self, client):
@@ -20,7 +22,6 @@ class Message(commands.Cog):
 			await message.channel.send(
 				'Hey! Here are the :rotating_light: top 10 :boom: reasons to use VSCode: \n(null)'
 			)
-
 
 def setup(client):
 	client.add_cog(Message(client))

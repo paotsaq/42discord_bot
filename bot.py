@@ -1,12 +1,29 @@
+# What this modules does:
+# - Cycles through all the cogs and runs them
+# - Gives the users 3 commands (load, unload, reload) to work with the cogs
+
+# Each cog has the same structure:
+# class cog_name(commands.Cog):
+# 	def __init__(self, client):
+# 		self.client = client
+
+# Whatever you want him to do
+
+# def setup(client):
+# 	client.add_cog(cog_name(client))
+
+# There are two main types of events:
+# - @commands.command(): response to a command following the pattern defined in bot.py (i.e. .<command name>)
+# - @commands.Cog.listener(): basically every other event like a message is sent or the bot starts
+
 import discord
 import os
 from discord.ext import commands
 
-# The second client assignation seems to work as the first but also allows to set the command prefix
-# client = discord.Client()
+# Gives the bots additionnal permissions
+# Defines the prefix for commands
 intents = discord.Intents().all()
 client = commands.Bot(command_prefix = '.', intents=intents)
-
 
 @client.command()
 async def load(ctx, extension):
