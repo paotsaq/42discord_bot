@@ -1,14 +1,13 @@
 import discord
 import requests
 import time
+import datetime
 from discord.ext import commands
 
 welcome_channel_id = 778322115010494544
 visitor_role_id = 778636804319608852
 student_role_id = 778636830416306216
 piscineux_role_id = 778556642287026177
-welcome_message = "***Welcome to the <:42_logo_white:777980207038201928> Lisbon Discord!  :raised_hands:***\nI'm Moulinette, and you probably know me from previous encounters. Was I too harsh with you? :robot:\n\nHere you'll be able to find motivated people to build ambitious projects with, learn a new language, or just play Among Us :video_game: but before going any further, I need to ID you!\n\n**Login**\nIf you are a warrior that managed to survive a piscine:\nsend `.nick <42 login>`\n\nIf you have yet to do the piscine or are just curious about 42:\nsend `.role visitor`\n\n**House**\nFor *piscineux*, react to this message with the house assigned to you during the piscine! :man_swimming:"
-
 
 class Welcome(commands.Cog):
 	def __init__(self, client):
@@ -38,8 +37,12 @@ class Welcome(commands.Cog):
 		async for message in channel.history(limit=None):
 			count += 1
 		if count == 0:
-			message = await channel.send(welcome_message)
-			welcome_message_id = message.id
+			welcome_message = discord.Embed(title="Welcome to the <:42_logo_white:777980207038201928> Lisbon Discord!  :raised_hands:", colour=discord.Colour(0xf8e71c), description="I'm Moulinette, and you probably know me from previous encounters. Was I too harsh with you? :robot:\n\nHere you'll be able to find motivated people to build ambitious projects with, learn a new language, or just play Among Us :video_game: but before going any further, I need to ID you!", timestamp=datetime.datetime.now())
+			welcome_message.set_footer(text="Powered by the community", icon_url=self.client.user.avatar_url)
+			welcome_message.add_field(name="Login", value="If you are a warrior that managed to survive a piscine:\ntype `.kinit <42 login>`", inline=False)
+			welcome_message.add_field(name="House", value="For _piscineux_, react to this message with the house assigned to you during the piscine! :man_swimming:", inline=False)
+			message = await channel.send(embed=welcome_message)
+			# welcome_message_id = message.id
 		await message.add_reaction('<:alliance:778315592368914464>')
 		await message.add_reaction('<:assembly:778315588481187900>')
 		await message.add_reaction('<:federation:778315572583989258>')
