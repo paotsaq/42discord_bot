@@ -22,7 +22,9 @@ student_role_id = 778636830416306216
 piscineux_role_id = 778556642287026177
 check_rules_id = 779748257261551617
 welcome_message_id = 0
+# If houses also has the visitor, it's to not over-complicate the remove on_raw_reaction_remove function
 houses = {
+	'🤠': visitor_role_id,
 	'alliance': alliance_role_id,
 	'assembly': assembly_role_id,
 	'federation': federation_role_id,
@@ -50,14 +52,15 @@ class Welcome(commands.Cog):
 		if welcome_count == 0:
 			welcome_message = discord.Embed(title="Welcome to the <:42_logo_white:777980207038201928> Lisbon Discord!  :raised_hands:", colour=discord.Colour(0xf8e71c), description="I'm Moulinette, and you probably know me from previous encounters. Was I too harsh with you? :robot:\n\nHere you'll be able to find motivated people to build ambitious projects with, learn a new language, or just play Among Us :video_game: but before going any further, I need to ID you!", timestamp=datetime.datetime.now())
 			welcome_message.set_footer(text="Powered by the community", icon_url=self.client.user.avatar_url)
-			welcome_message.add_field(name="Login", value="If you are a warrior that managed to survive a piscine:\ntype `.kinit <42 login>`", inline=False)
+			welcome_message.add_field(name="Login", value="If you are a warrior that already did a piscine:\ntype `.kinit <42 login>`\n\nIf you are just curious about the 42 concept, click on the icon 🤠", inline=False)
 			welcome_message.add_field(name="House", value="For _piscineux_, react to this message with the house assigned to you during the piscine! :man_swimming:", inline=False)
 			message_in_welcome = await channel.send(embed=welcome_message)
 			welcome_message_id = message_in_welcome.id
-			await message.add_reaction('<:alliance:778315592368914464>')
-			await message.add_reaction('<:assembly:778315588481187900>')
-			await message.add_reaction('<:federation:778315572583989258>')
-			await message.add_reaction('<:order:778315568612638730>')
+			await message_in_welcome.add_reaction("🤠")
+			await message_in_welcome.add_reaction('<:alliance:778315592368914464>')
+			await message_in_welcome.add_reaction('<:assembly:778315588481187900>')
+			await message_in_welcome.add_reaction('<:federation:778315572583989258>')
+			await message_in_welcome.add_reaction('<:order:778315568612638730>')
 		elif welcome_count == 1:
 			welcome_message_id = message_in_welcome.id
 		self.welcome_reaction_message = await self.client.get_channel(welcome_channel_id).fetch_message(welcome_message_id)
@@ -80,7 +83,7 @@ class Welcome(commands.Cog):
 			rules_message.add_field(name="2. Be honest", value="Don't misrepresent yourself as an 42 Student or piscineur :man_swimming: Visitors are welcome and encouraged - this is also a place to learn about 42 Lisbon.", inline=False)
 			rules_message.add_field(name="3. Be kind", value="We all love tech and coding, but we understand that are times when you may want to talk about something else. If so, please be mature while discussing controversial or sensitive topics, such as politics or religion.", inline=False)
 			rules_message.add_field(name="4. Be smart", value="If you want to there is content that is particularly sensitive or NSFW, we expect you to follow your best judgement. Be wary of other people's sensitivities.", inline=False)
-			rules_message.add_field(name="a", value="We trust you to be an exemplar member of the community. Of course, feel free to reach the staff at #bocal, or through a DM, at any time. Accept these rules by reacting with :white_check_mark:  to the message!", inline=False)
+			rules_message.add_field(name="\u200b", value="We trust you to be an exemplar member of the community. Of course, feel free to reach the staff at #bocal, or through a DM, at any time. Accept these rules by reacting with :white_check_mark:  to the message!", inline=False)
 			message_in_rules = await channel.send(embed=rules_message)
 			rules_message_id = message_in_rules.id
 			await message_in_rules.add_reaction('✅')
@@ -108,23 +111,59 @@ class Welcome(commands.Cog):
 			time.sleep(2)
 			await ctx.channel.purge(limit=1)
 
+
 	# Adding the role to the user based on the reaction house in clicks on
 	# Removing the role "Check Rules" to the user who react to the rules message
 	@commands.Cog.listener()
 	async def on_raw_reaction_add(self, payload):
+		if payload.member == self.client.user:
+			return
 		if payload.message_id == self.welcome_reaction_message.id:
-			role = discord.utils.get(payload.member.guild.roles, id=houses[payload.emoji.name])
-			await payload.member.add_roles(role)
+			# Case where user clicks on visitor
+			if payload.emoji.name == '🤠':
+				# Parsing user's roles to make sure is neither a student nor a piscineux
+				for member_role in payload.member.roles:
+					if member_role.id in (piscineux_role_id, student_role_id):
+						await self.welcome_reaction_message.remove_reaction(payload.emoji, payload.member)
+						return
+				# If not student, assign visitor role
+				role = discord.utils.get(payload.member.guild.roles, id=visitor_role_id)
+				await payload.member.add_roles(role)
+			# Case where user clicks on a house
+			elif payload.emoji.name in houses:
+				# Check if user has already a house AND is a student or piscineux
+				check = 0
+				for member_role in payload.member.roles:
+					if str(member_role) in houses:
+						await self.welcome_reaction_message.remove_reaction(payload.emoji, payload.member)
+						return
+					elif member_role.id in (piscineux_role_id, student_role_id):
+						check = 1
+				if check == 0:
+					await self.welcome_reaction_message.remove_reaction(payload.emoji, payload.member)
+					return
+				# If check good, assign house
+				role = discord.utils.get(payload.member.guild.roles, id=houses[payload.emoji.name])
+				await payload.member.add_roles(role)
+			# Case where user reacts with another emoji
+			else:
+				await self.welcome_reaction_message.remove_reaction(payload.emoji, payload.member)
 		elif payload.message_id == self.rules_reaction_message.id:
-			self.client.guild = self.client.get_guild(server_id)
-			role = self.client.guild.get_role(check_rules_id)
-			member = self.client.guild.get_member(payload.user_id)
-			await member.remove_roles(role)
+			if payload.emoji.name == '✅':
+				# Creating the attribute guild to self.client. Here guild is the server
+				self.client.guild = self.client.get_guild(server_id)
+				role = self.client.guild.get_role(check_rules_id)
+				member = self.client.guild.get_member(payload.user_id)
+				await member.remove_roles(role)
+			# Case where user reacts with another emoji
+			else:
+				await self.rules_reaction_message.remove_reaction(payload.emoji, payload.member)
 
 	# Removing the role if the user takes away the reaction
 	@commands.Cog.listener()
 	async def on_raw_reaction_remove(self, payload):
 		if payload.message_id == self.welcome_reaction_message.id:
+			# Creating the attribute guild to self.client. Here guild is the server
 			self.client.guild = self.client.get_guild(server_id)
 			role = self.client.guild.get_role(houses[payload.emoji.name])
 			member = self.client.guild.get_member(payload.user_id)
@@ -132,8 +171,9 @@ class Welcome(commands.Cog):
 
 	# Adds the role "Check Rules" when a new user enters the server
 	@commands.Cog.listener()
-	async def on_member_join(self, memeber):
-		await payload.member.add_roles(check_rules_id)
+	async def on_member_join(self, member):
+		role = discord.utils.get(member.guild.roles, id=check_rules_id)
+		await member.add_roles(role)
 
 def setup(client):
 	client.add_cog(Welcome(client))
