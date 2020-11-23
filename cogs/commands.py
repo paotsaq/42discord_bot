@@ -13,5 +13,12 @@ class Commands(commands.Cog):
 	async def clear(self, ctx, amount=1):
 		await ctx.channel.purge(limit=amount + 1)
 
+	# TODO: WIP
+	@commands.command()
+	async def stop(self, ctx):
+		if('staff' in [x.name for x in ctx.author.roles]):
+			await ctx.channel.send("Logging out!")
+			await self.client.close()
+
 def setup(client):
 	client.add_cog(Commands(client))
