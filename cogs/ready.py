@@ -6,10 +6,9 @@ import discord
 from discord.ext import commands, tasks
 from itertools import cycle
 
-status = cycle([
-	'chess with Norminette', 'csgo  with Norminette', 'lol with Norminette',
-	'Among Us with Norminette'
-])
+status = cycle([x + ' with Norminette' for x in [
+	'chess', 'csgo', 'lol', 'Among Us', 'Minecraft','CodinGame'
+]])
 
 class Ready(commands.Cog):
 	def __init__(self, client):
