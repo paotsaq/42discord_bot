@@ -21,7 +21,6 @@ order_role_id = 778273424727605309
 student_role_id = 778636830416306216
 piscineux_role_id = 778556642287026177
 check_rules_id = 779748257261551617
-welcome_message_id = 0
 # If houses also has the visitor, it's to not over-complicate the remove on_raw_reaction_remove function
 houses = {
 	'🤠': visitor_role_id,
@@ -44,6 +43,7 @@ class Welcome(commands.Cog):
 		# If 0, he adds the welcome message and the initial house reactions
 		# If 1, he takes the id of the only existing message
 		# In each case he saves the first message in self.reaction_message to be used later
+		welcome_message_id = 0
 		channel = discord.utils.get(self.client.get_all_channels(),
 									id=welcome_channel_id)
 		welcome_count = 0
@@ -141,6 +141,10 @@ class Welcome(commands.Cog):
 						check = 1
 				if check == 0:
 					await self.welcome_reaction_message.remove_reaction(payload.emoji, payload.member)
+					channel = self.client.get_channel(welcome_channel_id)
+					await channel.send("Not logged in. Please use `.kinit <42 login>`")
+					time.sleep(2)
+					await channel.purge(limit=1)
 					return
 				# If check good, assign house
 				role = discord.utils.get(payload.member.guild.roles, id=houses[payload.emoji.name])
