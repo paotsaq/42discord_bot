@@ -31,7 +31,8 @@ async def load(ctx, extension):
 
 @client.command()
 async def unload(ctx, extension):
-	client.unload_extension(f'cogs.{extension}')
+	if('staff' in [x.name for x in ctx.author.roles]):
+		client.unload_extension(f'cogs.{extension}')
 
 @client.command()
 async def reload(ctx, extension):

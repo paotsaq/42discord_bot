@@ -34,37 +34,47 @@ class Welcome(commands.Cog):
 	def __init__(self, client):
 		self.client = client
 
-
 	@commands.Cog.listener()
 	async def on_ready(self, channel: discord.TextChannel = None):
-
 		# Welcome Channel
 		# Each time the bot starts, he counts the number of messages in the welcome channel
-		# If 0, he adds the welcome message and the initial house reactions
-		# If 1, he takes the id of the only existing message
-		# In each case he saves the first message in self.reaction_message to be used later
-		welcome_message_id = 0
+		# If 0, he adds the welcome message and the congrats message
+		# If 2, he takes the id of the 2 only existing messages
+		# In each case he saves the first message in self.welcome_message and the second in
+		# self.congrats_message for use later
 		channel = discord.utils.get(self.client.get_all_channels(),
 									id=welcome_channel_id)
+		# Counting the number of messages in #welcome
+		# The message are looped from recent to older
 		welcome_count = 0
 		async for message_in_welcome in channel.history(limit=None):
 			welcome_count += 1
+		# Case: 2 messages exist in the channel
+			if welcome_count == 1:
+				congrats_message = message_in_welcome
+			elif welcome_count == 2:
+				welcome_message = message_in_welcome
+		# Case: no messages in #welcome
 		if welcome_count == 0:
-			welcome_message = discord.Embed(title="Welcome to the <:42_logo_white:777980207038201928> Lisbon Discord!  :raised_hands:", colour=discord.Colour(0xf8e71c), description="I'm Moulinette, and you probably know me from previous encounters. Was I too harsh with you? :robot:\n\nHere you'll be able to find motivated people to build ambitious projects with, learn a new language, or just play Among Us :video_game: but before going any further, I need to ID you!", timestamp=datetime.datetime.now())
-			welcome_message.set_footer(text="Powered by the community", icon_url=self.client.user.avatar_url)
-			welcome_message.add_field(name="Login", value="If you are a warrior that already did a piscine:\ntype `.kinit <42 login>`\n\nIf you are just curious about the 42 concept, click on the icon 🤠", inline=False)
-			welcome_message.add_field(name="House", value="For _piscineux_, react to this message with the house assigned to you during the piscine! :man_swimming:", inline=False)
-			message_in_welcome = await channel.send(embed=welcome_message)
-			welcome_message_id = message_in_welcome.id
-			await message_in_welcome.add_reaction("🤠")
-			await message_in_welcome.add_reaction('<:alliance:778315592368914464>')
-			await message_in_welcome.add_reaction('<:assembly:778315588481187900>')
-			await message_in_welcome.add_reaction('<:federation:778315572583989258>')
-			await message_in_welcome.add_reaction('<:order:778315568612638730>')
-		elif welcome_count == 1:
-			welcome_message_id = message_in_welcome.id
-		self.welcome_reaction_message = await self.client.get_channel(welcome_channel_id).fetch_message(welcome_message_id)
-
+			# Writing the welcome_message and adding its reactions
+			welcome_message_embed = discord.Embed(title="Welcome to the <:42_logo_white:777980207038201928> Lisbon Discord!  :raised_hands:", colour=discord.Colour(0xf8e71c), description="I'm Moulinette, and you probably know me from previous encounters. Was I too harsh with you? :robot:\n\nHere you'll be able to find motivated people to build ambitious projects with, learn a new language, or just play Among Us :video_game: but before going any further, I need to ID you!", timestamp=datetime.datetime.now())
+			welcome_message_embed.set_footer(text="Powered by the community", icon_url=self.client.user.avatar_url)
+			welcome_message_embed.add_field(name="Login", value="If you are a warrior that already did a piscine:\ntype `.kinit <42 login>`\n\nIf you are just curious about the 42 concept, click on the icon 🤠", inline=False)
+			welcome_message_embed.add_field(name="House", value="For _piscineux_, react to this message with the house assigned to you during the piscine! :man_swimming:", inline=False)
+			welcome_message = await channel.send(embed=welcome_message_embed)
+			await welcome_message.add_reaction("🤠")
+			await welcome_message.add_reaction('<:alliance:778315592368914464>')
+			await welcome_message.add_reaction('<:assembly:778315588481187900>')
+			await welcome_message.add_reaction('<:federation:778315572583989258>')
+			await welcome_message.add_reaction('<:order:778315568612638730>')
+			# Writing the congrats_message and adding its reactions
+			congrats_message_embed = discord.Embed(title="Two weeks have passed since your piscine and the results are up? :scream:", colour=discord.Colour(0xf8e71c), description="*If the results have yet to arrive in your inbox (or spam), don't worry, they probably are on their way. In the meantime, feel free to kill some time here* :video_game:\n\nAre you part of the lucky few that got in? On behalf of all the 42 Lisboa community (and my friend the Norminette), we congratulate you for this amazing feat <:success:778612467567558667>\nTo change your role from \"piscineux\" to \"42student\", **react to this message with the <:42_logo_white:777980207038201928> logo**\n\nIf not, fear not. The community will always be here for you and you can still try again next year stronger than ever <:think:778612462164639756>\n\nN.B. there are no private channels only for 42 students, the role \"42student\" exists only for convinience in case someone whats to mention all 42 students at once <:shipit:778612372981547008>", timestamp=datetime.datetime.now())
+			congrats_message_embed.set_footer(text="Powered by the community", icon_url=self.client.user.avatar_url)
+			congrats_message = await channel.send(embed=congrats_message_embed)
+			await congrats_message.add_reaction("<:42_logo_white:777980207038201928>")
+		# Add 2 attributes to self for the function on_raw_reaction_add
+		self.welcome_message = await self.client.get_channel(welcome_channel_id).fetch_message(welcome_message.id)
+		self.congrats_message = await self.client.get_channel(welcome_channel_id).fetch_message(congrats_message.id)
 
 		# Rules Channel
 		# Each time the bot starts, he counts the number of messages in the welcome channel
@@ -98,9 +108,16 @@ class Welcome(commands.Cog):
 	@commands.command()
 	async def kinit(self, ctx, login="404"):
 		await ctx.channel.purge(limit=1)
-		role = discord.utils.get(ctx.author.guild.roles, id=piscineux_role_id)
 		url = 'https://cdn.intra.42.fr/users/{}.jpg'.format(login)
 		if requests.get(url).status_code == 200:
+			# Removing the visitor role (even if he doesn't have it)
+			# Creating the attribute guild to self.client. Here guild is the server
+			self.client.guild = self.client.get_guild(server_id)
+			role = self.client.guild.get_role(visitor_role_id)
+			member = self.client.guild.get_member(ctx.message.author.id)
+			await member.remove_roles(role)
+			# Adding the piscineux role
+			role = discord.utils.get(ctx.author.guild.roles, id=piscineux_role_id)
 			await ctx.message.author.edit(nick=login)
 			await ctx.message.author.add_roles(role)
 			await ctx.send("<:success:778612467567558667>")
@@ -111,20 +128,19 @@ class Welcome(commands.Cog):
 			time.sleep(2)
 			await ctx.channel.purge(limit=1)
 
-
 	# Adding the role to the user based on the reaction house in clicks on
 	# Removing the role "Check Rules" to the user who react to the rules message
 	@commands.Cog.listener()
 	async def on_raw_reaction_add(self, payload):
 		if payload.member == self.client.user:
 			return
-		if payload.message_id == self.welcome_reaction_message.id:
+		if payload.message_id == self.welcome_message.id:
 			# Case where user clicks on visitor
 			if payload.emoji.name == '🤠':
 				# Parsing user's roles to make sure is neither a student nor a piscineux
 				for member_role in payload.member.roles:
 					if member_role.id in (piscineux_role_id, student_role_id):
-						await self.welcome_reaction_message.remove_reaction(payload.emoji, payload.member)
+						await self.welcome_message.remove_reaction(payload.emoji, payload.member)
 						return
 				# If not student, assign visitor role
 				role = discord.utils.get(payload.member.guild.roles, id=visitor_role_id)
@@ -135,12 +151,12 @@ class Welcome(commands.Cog):
 				check = 0
 				for member_role in payload.member.roles:
 					if str(member_role) in houses:
-						await self.welcome_reaction_message.remove_reaction(payload.emoji, payload.member)
+						await self.welcome_message.remove_reaction(payload.emoji, payload.member)
 						return
 					elif member_role.id in (piscineux_role_id, student_role_id):
 						check = 1
 				if check == 0:
-					await self.welcome_reaction_message.remove_reaction(payload.emoji, payload.member)
+					await self.welcome_message.remove_reaction(payload.emoji, payload.member)
 					channel = self.client.get_channel(welcome_channel_id)
 					await channel.send("Not logged in. Please use `.kinit <42 login>`")
 					time.sleep(2)
@@ -151,7 +167,30 @@ class Welcome(commands.Cog):
 				await payload.member.add_roles(role)
 			# Case where user reacts with another emoji
 			else:
-				await self.welcome_reaction_message.remove_reaction(payload.emoji, payload.member)
+				await self.welcome_message.remove_reaction(payload.emoji, payload.member)
+		elif payload.message_id == self.congrats_message.id:
+			# Parsing user's roles to make sure he is a piscineux
+			check = 0
+			for member_role in payload.member.roles:
+				if member_role.id == piscineux_role_id:
+					check = 1
+			if check == 0:
+				await self.congrats_message.remove_reaction(payload.emoji, payload.member)
+				channel = self.client.get_channel(welcome_channel_id)
+				await channel.send("Not logged in. Please use `.kinit <42 login>`")
+				time.sleep(2)
+				await channel.purge(limit=1)
+				return
+			else:
+				# Remove role piscineux
+				# Creating the attribute guild to self.client. Here guild is the server
+				self.client.guild = self.client.get_guild(server_id)
+				role = self.client.guild.get_role(piscineux_role_id)
+				member = self.client.guild.get_member(payload.user_id)
+				await member.remove_roles(role)
+				# Add role 42student
+				role = discord.utils.get(payload.member.guild.roles, id=student_role_id)
+				await payload.member.add_roles(role)
 		elif payload.message_id == self.rules_reaction_message.id:
 			if payload.emoji.name == '✅':
 				# Creating the attribute guild to self.client. Here guild is the server
@@ -166,7 +205,7 @@ class Welcome(commands.Cog):
 	# Removing the role if the user takes away the reaction
 	@commands.Cog.listener()
 	async def on_raw_reaction_remove(self, payload):
-		if payload.message_id == self.welcome_reaction_message.id:
+		if payload.message_id == self.welcome_message.id:
 			# Creating the attribute guild to self.client. Here guild is the server
 			self.client.guild = self.client.get_guild(server_id)
 			role = self.client.guild.get_role(houses[payload.emoji.name])
@@ -178,6 +217,15 @@ class Welcome(commands.Cog):
 	async def on_member_join(self, member):
 		role = discord.utils.get(member.guild.roles, id=check_rules_id)
 		await member.add_roles(role)
+
+	# Prevent users to send messages on #welcome that are not .kinit
+	@commands.Cog.listener()
+	async def on_message(self, message):
+		if message.author == self.client.user:
+			return
+		elif message.channel.id == welcome_channel_id and not message.content.startswith('.kinit'):
+			await message.channel.purge(limit=1)
+			return
 
 def setup(client):
 	client.add_cog(Welcome(client))

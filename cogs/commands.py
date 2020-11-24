@@ -11,7 +11,8 @@ class Commands(commands.Cog):
 	# Clears a given number of lines. 1 being the default if no number is given as parameter
 	@commands.command()
 	async def clear(self, ctx, amount=1):
-		await ctx.channel.purge(limit=amount + 1)
+		if('staff' in [x.name for x in ctx.author.roles]):
+			await ctx.channel.purge(limit=amount + 1)
 
 	# TODO: WIP
 	@commands.command()
