@@ -17,7 +17,7 @@ These instruction are meant to help people get started and assume you are runnin
 ### Install python v.3.9.0 
 
 To check if you have python v3.9.0 installed you can run the command `python3.9 --version`.	If you get "Python 3.9.0" as output congratulation. You have the correct version of python installed.
-<!-- TODO: add cmd `sudo apt-get install software-properties-common` -->
+
 If however you see "python3.9: command not found" don't panic ~~yet~~. We need to first get "deadsnakes" team PPA on apt's repository list (This means we need to add a new place for apt to check for packages). For that we need to first install the add-apt-repository package. Simply run `sudo apt-get install software-properties-common`. Confirm the instalation by pressing 'y' and hit enter. You can now run `sudo add-apt-repository ppa:deadsnakes/ppa`. When prompted hit enter to confirm the addition to the list. After adding the new repository run `sudo apt update` (optionally you may want to run `sudo apt upgrade` to make sure all you packages are up to date).
 
 Now we can finaly install python. You want to install python3.9 and python3.9-venv. Fell free to install more modules if you want (i.e. python3.9-doc, python3.9-dev, python3.9-distutils, python3.9-lib2to3, python3.9-gdbm, python3.9-tk). You can install python like any other package. Just run `sudo apt install python3.9 python3.9-venv <other packages>`
@@ -34,16 +34,14 @@ Now you can launch the environment by running `source moulinette/bin/activate`. 
 
 ### Install all dependencies
 
-To handle dependencies we use pip. You don't need to worry about installing it because the environment you just set up will provide one for you. Run `moulinette/bin/pip list` to check if the one that was installed automatically is up to date. If you get a warning stating that a new version of pip is available run `moulinette/bin/python -m pip install --upgrade pip`. Python programs can have a lot of dependencies so we have provided a requirements file to help you download all dependencies easily. Run `moulinette/bin/pip install -r requirements.txt`
+To handle dependencies we use pip. You don't need to worry about installing it because the environment you just set up will provide one for you. Run `moulinette/bin/pip list` to check if the one that was installed automatically is up to date (The most recent version as of the writing of this file is pip v20.2.4). If you get a warning stating that a new version of pip is available or you see that your current version is older run `moulinette/bin/python -m pip install --upgrade pip`. Python programs can have a lot of dependencies so we have provided a requirements file to help you download all dependencies easily. Run `moulinette/bin/pip install -r requirements.txt`. Congratulation! You just finnished setting up everything and are ready to start programming moulinette.
+
+If durring the requirements instalation ou got a "PEP 517" error export these 2 variables and try again. `export MULTIDICT_NO_EXTENSIONS=1` and `export YARL_NO_EXTENSIONS=1`
 
 ### Bring our baby Moulinette to life
+
+The hard part is done. Now you can bring moulinette to life by typing `moulinette/bin/python bot.py`. Remember that you need a valid token in a 'token.txt' file for the bot to connect to discord.
 
 ## Disclaimer
 
 This project has no afilliation with 42 as an entity or organization. The creators and participants do not represent 42 in any way.
-
-<!-- * Run `python3 -m pip install -r requirements.txt` to download the dependencies
-* Run `source discord_env/bin/activate` at the root of the repo.
-* `python3 bot.py` -->
-
-<!-- That should wake Moulinette up. Be careful as there is a *personal token* inside the main.py file (yes, I know this is bad practice). It is also needed to manually add the bot to any server you wish.  -->
