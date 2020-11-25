@@ -3,31 +3,20 @@
 # - Ids the user
 # - Gives the user its role (piscineux or 42student, one of the houses)
 
+import ids
 import discord
 import requests
 import time
 import datetime
 from discord.ext import commands
 
-# IDs taken from the server (to be updated once we go over to the real server)
-server_id = 777686265600540682
-welcome_channel_id = 778322115010494544
-rules_channel_id = 779708218812137493
-visitor_role_id = 778636804319608852
-alliance_role_id = 778267876083761163
-assembly_role_id = 778273424736649230
-federation_role_id = 778273424605839381
-order_role_id = 778273424727605309
-student_role_id = 778636830416306216
-piscineux_role_id = 778556642287026177
-check_rules_id = 779748257261551617
 # If houses also has the visitor, it's to not over-complicate the remove on_raw_reaction_remove function
 houses = {
-	'🤠': visitor_role_id,
-	'alliance': alliance_role_id,
-	'assembly': assembly_role_id,
-	'federation': federation_role_id,
-	'order': order_role_id,
+	'🤠': ids.visitor,
+	'alliance': ids.alliance,
+	'assembly': ids.assembly,
+	'federation': ids.federation,
+	'order': ids.order,
 }
 
 class Welcome(commands.Cog):
@@ -43,7 +32,7 @@ class Welcome(commands.Cog):
 		# In each case he saves the first message in self.welcome_message and the second in
 		# self.congrats_message for use later
 		channel = discord.utils.get(self.client.get_all_channels(),
-									id=welcome_channel_id)
+									id=ids.welcome)
 		# Counting the number of messages in #welcome
 		# The message are looped from recent to older
 		welcome_count = 0
@@ -73,8 +62,8 @@ class Welcome(commands.Cog):
 			congrats_message = await channel.send(embed=congrats_message_embed)
 			await congrats_message.add_reaction("<:42_logo_white:777980207038201928>")
 		# Add 2 attributes to self for the function on_raw_reaction_add
-		self.welcome_message = await self.client.get_channel(welcome_channel_id).fetch_message(welcome_message.id)
-		self.congrats_message = await self.client.get_channel(welcome_channel_id).fetch_message(congrats_message.id)
+		self.welcome_message = await self.client.get_channel(ids.welcome).fetch_message(welcome_message.id)
+		self.congrats_message = await self.client.get_channel(ids.welcome).fetch_message(congrats_message.id)
 
 		# Rules Channel
 		# Each time the bot starts, he counts the number of messages in the welcome channel
@@ -82,7 +71,7 @@ class Welcome(commands.Cog):
 		# If 1, he takes the id of the only existing message
 		# In each case he saves the first message in self.reaction_message to be used later
 		channel = discord.utils.get(self.client.get_all_channels(),
-									id=rules_channel_id)
+									id=ids.rules)
 		rules_count = 0
 		async for message_in_rules in channel.history(limit=None):
 			rules_count += 1
@@ -99,7 +88,7 @@ class Welcome(commands.Cog):
 			await message_in_rules.add_reaction('✅')
 		elif rules_count == 1:
 			rules_message_id = message_in_rules.id
-		self.rules_reaction_message = await self.client.get_channel(rules_channel_id).fetch_message(rules_message_id)
+		self.rules_reaction_message = await self.client.get_channel(ids.rules).fetch_message(rules_message_id)
 
 	# Identication based on whether or not the cdn link with the login inputed works or not
 	# If login does work, change its login and add the role of piscineux
@@ -112,12 +101,19 @@ class Welcome(commands.Cog):
 		if requests.get(url).status_code == 200:
 			# Removing the visitor role (even if he doesn't have it)
 			# Creating the attribute guild to self.client. Here guild is the server
-			self.client.guild = self.client.get_guild(server_id)
-			role = self.client.guild.get_role(visitor_role_id)
+			self.client.guild = self.client.get_guild(ids.server)
+			role = self.client.guild.get_role(ids.visitor)
 			member = self.client.guild.get_member(ctx.message.author.id)
 			await member.remove_roles(role)
-			# Adding the piscineux role
-			role = discord.utils.get(ctx.author.guild.roles, id=piscineux_role_id)
+			# Checking if user already has 42student role. If so, don't add piscineux role
+			for role in member.roles:
+				if role.id == ids.student:
+					await ctx.send("Already 42 student. Login unnecessary")
+					time.sleep(1)
+					await ctx.channel.purge(limit=1)
+					return
+			# Adding the piscineux role, if he does not have the student role
+			role = discord.utils.get(ctx.author.guild.roles, id=ids.piscineux)
 			await ctx.message.author.edit(nick=login)
 			await ctx.message.author.add_roles(role)
 			await ctx.send("<:success:778612467567558667>")
@@ -139,11 +135,11 @@ class Welcome(commands.Cog):
 			if payload.emoji.name == '🤠':
 				# Parsing user's roles to make sure is neither a student nor a piscineux
 				for member_role in payload.member.roles:
-					if member_role.id in (piscineux_role_id, student_role_id):
+					if member_role.id in (ids.piscineux, ids.student):
 						await self.welcome_message.remove_reaction(payload.emoji, payload.member)
 						return
 				# If not student, assign visitor role
-				role = discord.utils.get(payload.member.guild.roles, id=visitor_role_id)
+				role = discord.utils.get(payload.member.guild.roles, id=ids.visitor)
 				await payload.member.add_roles(role)
 			# Case where user clicks on a house
 			elif payload.emoji.name in houses:
@@ -153,11 +149,11 @@ class Welcome(commands.Cog):
 					if str(member_role) in houses:
 						await self.welcome_message.remove_reaction(payload.emoji, payload.member)
 						return
-					elif member_role.id in (piscineux_role_id, student_role_id):
+					elif member_role.id in (ids.piscineux, ids.student):
 						check = 1
 				if check == 0:
 					await self.welcome_message.remove_reaction(payload.emoji, payload.member)
-					channel = self.client.get_channel(welcome_channel_id)
+					channel = self.client.get_channel(ids.welcome)
 					await channel.send("Not logged in. Please use `.kinit <42 login>`")
 					time.sleep(2)
 					await channel.purge(limit=1)
@@ -165,18 +161,15 @@ class Welcome(commands.Cog):
 				# If check good, assign house
 				role = discord.utils.get(payload.member.guild.roles, id=houses[payload.emoji.name])
 				await payload.member.add_roles(role)
-			# Case where user reacts with another emoji
-			else:
-				await self.welcome_message.remove_reaction(payload.emoji, payload.member)
 		elif payload.message_id == self.congrats_message.id:
 			# Parsing user's roles to make sure he is a piscineux
 			check = 0
 			for member_role in payload.member.roles:
-				if member_role.id == piscineux_role_id:
+				if member_role.id == ids.piscineux:
 					check = 1
 			if check == 0:
 				await self.congrats_message.remove_reaction(payload.emoji, payload.member)
-				channel = self.client.get_channel(welcome_channel_id)
+				channel = self.client.get_channel(ids.welcome)
 				await channel.send("Not logged in. Please use `.kinit <42 login>`")
 				time.sleep(2)
 				await channel.purge(limit=1)
@@ -184,30 +177,27 @@ class Welcome(commands.Cog):
 			else:
 				# Remove role piscineux
 				# Creating the attribute guild to self.client. Here guild is the server
-				self.client.guild = self.client.get_guild(server_id)
-				role = self.client.guild.get_role(piscineux_role_id)
+				self.client.guild = self.client.get_guild(ids.server)
+				role = self.client.guild.get_role(ids.piscineux)
 				member = self.client.guild.get_member(payload.user_id)
 				await member.remove_roles(role)
 				# Add role 42student
-				role = discord.utils.get(payload.member.guild.roles, id=student_role_id)
+				role = discord.utils.get(payload.member.guild.roles, id=ids.student)
 				await payload.member.add_roles(role)
 		elif payload.message_id == self.rules_reaction_message.id:
 			if payload.emoji.name == '✅':
 				# Creating the attribute guild to self.client. Here guild is the server
-				self.client.guild = self.client.get_guild(server_id)
-				role = self.client.guild.get_role(check_rules_id)
+				self.client.guild = self.client.get_guild(ids.server)
+				role = self.client.guild.get_role(ids.check_rules)
 				member = self.client.guild.get_member(payload.user_id)
 				await member.remove_roles(role)
-			# Case where user reacts with another emoji
-			else:
-				await self.rules_reaction_message.remove_reaction(payload.emoji, payload.member)
 
 	# Removing the role if the user takes away the reaction
 	@commands.Cog.listener()
 	async def on_raw_reaction_remove(self, payload):
 		if payload.message_id == self.welcome_message.id:
 			# Creating the attribute guild to self.client. Here guild is the server
-			self.client.guild = self.client.get_guild(server_id)
+			self.client.guild = self.client.get_guild(ids.server)
 			role = self.client.guild.get_role(houses[payload.emoji.name])
 			member = self.client.guild.get_member(payload.user_id)
 			await member.remove_roles(role)
@@ -215,7 +205,7 @@ class Welcome(commands.Cog):
 	# Adds the role "Check Rules" when a new user enters the server
 	@commands.Cog.listener()
 	async def on_member_join(self, member):
-		role = discord.utils.get(member.guild.roles, id=check_rules_id)
+		role = discord.utils.get(member.guild.roles, id=ids.check_rules)
 		await member.add_roles(role)
 
 	# Prevent users to send messages on #welcome that are not .kinit
@@ -223,7 +213,7 @@ class Welcome(commands.Cog):
 	async def on_message(self, message):
 		if message.author == self.client.user:
 			return
-		elif message.channel.id == welcome_channel_id and not message.content.startswith('.kinit'):
+		elif message.channel.id == ids.welcome and not message.content.startswith('.kinit'):
 			await message.channel.purge(limit=1)
 			return
 
