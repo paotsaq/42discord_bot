@@ -24,7 +24,7 @@ If however you see "python3.9: command not found" don't panic ~~yet~~. We first 
 - Run `sudo apt update` 
 - Run `sudo apt upgrade` (quick sidenote: it's highly recommended to run `sudo apt upgrade` frequently on your system to update all of your packages)
 
-Now, we can finally install Python 3.9. You want to install python3.9 and python3.9-venv. Feel free to install more modules if you want (i.e. python3.9-doc, python3.9-dev, python3.9-distutils, python3.9-lib2to3, python3.9-gdbm, python3.9-tk). You can install Python like any other package. Just run `sudo apt install python3.9 python3.9-venv <other packages>`
+Now, we can finally install Python 3.9. You want to install python3.9 and python3.9-venv. Feel free to install more modules if you want (i.e. python3.9-doc, python3.9-dev, python3.9-distutils, python3.9-lib2to3, python3.9-gdbm, python3.9-tk). You can install Python like any other package. Just run `sudo apt install python3.9 python3.9-venv <other packages>`.
 
 To make sure Python v3.9.0 was installed correctly you can run `python3.9 --version` and "Python 3.9.0" should appear on the screen.
 
