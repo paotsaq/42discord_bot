@@ -6,7 +6,7 @@ This project was initiated by the participants of the first piscine of 42 Lisboa
 
 * [Foreword](#foreword)
 * [Install Python v.3.9.0](#install-python-v390)
-* [Create an environment in which to run our dear Moulinette](#create-an-environment-in-which-to-run-out-dear-moulinette)
+* [Create an environment in which to run our dear Moulinette](#create-an-environment-in-which-to-run-our-dear-moulinette)
 * [Install all dependencies](#install-all-dependencies)
 * [Bring our baby Moulinette to life](#bring-our-baby-moulinette-to-life)
 
