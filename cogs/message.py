@@ -13,7 +13,7 @@ class Message(commands.Cog):
 		if message.author == self.client.user:
 			return
 		elif message.content.startswith('Amo-te'):
-			await message.channel.send('só amo o Miguel Gueifão...!')
+			await message.channel.send('Só amo o Miguel Gueifão...!')
 		elif "slack" in message.content:
 			await message.channel.send(
 				'do you miss the :rotating_light: slack police :rotating_light:'

@@ -46,21 +46,21 @@ class Welcome(commands.Cog):
 		# Case: no messages in #welcome
 		if welcome_count == 0:
 			# Writing the welcome_message and adding its reactions
-			welcome_message_embed = discord.Embed(title="Welcome to the <:42_logo_white:777980207038201928> Lisbon Discord!  :raised_hands:", colour=discord.Colour(0xf8e71c), description="I'm Moulinette, and you probably know me from previous encounters. Was I too harsh with you? :robot:\n\nHere you'll be able to find motivated people to build ambitious projects with, learn a new language, or just play Among Us :video_game: but before going any further, I need to ID you!", timestamp=datetime.datetime.now())
+			welcome_message_embed = discord.Embed(title=f"Welcome to the {ids.school_logo_white} Lisbon Discord! :raised_hands:", colour=discord.Colour(0xf8e71c), description="I'm Moulinette, and you probably know me from previous encounters. Was I too harsh with you? :robot:\n\nHere you'll be able to find motivated people to build ambitious projects with, learn a new language, or just play Among Us :video_game: but before going any further, I need to ID you!", timestamp=datetime.datetime.now())
 			welcome_message_embed.set_footer(text="Powered by the community", icon_url=self.client.user.avatar_url)
-			welcome_message_embed.add_field(name="Login", value="If you are a warrior that already did a piscine:\ntype `.kinit <42 login>`\n\nIf you are just curious about the 42 concept, click on the icon 🤠", inline=False)
+			welcome_message_embed.add_field(name="Login", value="If you are a warrior that already did a piscine:\ntype `.kinit <42 login>`\n\nIf you are just curious about the 42 concept, click on the 🤠 icon", inline=False)
 			welcome_message_embed.add_field(name="House", value="For _piscineux_, react to this message with the house assigned to you during the piscine! :man_swimming:", inline=False)
 			welcome_message = await channel.send(embed=welcome_message_embed)
 			await welcome_message.add_reaction("🤠")
-			await welcome_message.add_reaction('<:alliance:778315592368914464>')
-			await welcome_message.add_reaction('<:assembly:778315588481187900>')
-			await welcome_message.add_reaction('<:federation:778315572583989258>')
-			await welcome_message.add_reaction('<:order:778315568612638730>')
+			await welcome_message.add_reaction(ids.alliance_logo)
+			await welcome_message.add_reaction(ids.assembly_logo)
+			await welcome_message.add_reaction(ids.federation_logo)
+			await welcome_message.add_reaction(ids.order_logo)
 			# Writing the congrats_message and adding its reactions
-			congrats_message_embed = discord.Embed(title="Two weeks have passed since your piscine and the results are up? :scream:", colour=discord.Colour(0xf8e71c), description="*If the results have yet to arrive in your inbox (or spam), don't worry, they probably are on their way. In the meantime, feel free to kill some time here* :video_game:\n\nAre you part of the lucky few that got in? On behalf of all the 42 Lisboa community (and my friend the Norminette), we congratulate you for this amazing feat <:success:778612467567558667>\nTo change your role from \"piscineux\" to \"42student\", **react to this message with the <:42_logo_white:777980207038201928> logo**\n\nIf not, fear not. The community will always be here for you and you can still try again next year stronger than ever <:think:778612462164639756>\n\nN.B. there are no private channels only for 42 students, the role \"42student\" exists only for convinience in case someone whats to mention all 42 students at once <:shipit:778612372981547008>", timestamp=datetime.datetime.now())
+			congrats_message_embed = discord.Embed(title="Two weeks have passed since your piscine and the results are up? :scream:", colour=discord.Colour(0xf8e71c), description=f"\*If the results have yet to arrive in your inbox (or spam), don't worry, they probably are on their way. In the meantime, feel free to kill some time here* :video_game:\n\nAre you part of the lucky few that got in? On behalf of all the 42 Lisboa community (and my friend the Norminette), we congratulate you for this amazing feat {ids.success_kid_emoji}\nTo change your role from \"piscineux\" to \"42student\", **react to this message with the {ids.school_logo_white} logo**\n\nIf not, fear not. The community will always be here for you and you can still try again next year stronger than ever {ids.think_emoji}\n\nN.B. there are no private channels only for 42 students, the role \"42student\" exists only for convinience in case someone whats to mention all 42 students at once {ids.shipit_emoji}", timestamp=datetime.datetime.now())
 			congrats_message_embed.set_footer(text="Powered by the community", icon_url=self.client.user.avatar_url)
 			congrats_message = await channel.send(embed=congrats_message_embed)
-			await congrats_message.add_reaction("<:42_logo_white:777980207038201928>")
+			await congrats_message.add_reaction(ids.school_logo_white)
 		# Add 2 attributes to self for the function on_raw_reaction_add
 		self.welcome_message = await self.client.get_channel(ids.welcome).fetch_message(welcome_message.id)
 		self.congrats_message = await self.client.get_channel(ids.welcome).fetch_message(congrats_message.id)
@@ -76,7 +76,7 @@ class Welcome(commands.Cog):
 		async for message_in_rules in channel.history(limit=None):
 			rules_count += 1
 		if rules_count == 0:
-			rules_message = discord.Embed(title="Rules for the <:42_logo_white:777980207038201928> Lisbon Discord!", colour=discord.Colour(0xf8e71c), description="We all want the :42_logo_white: Lisbon Discord to be a good place for all. With that in mind, here are some basic guidelines to follow.", timestamp=datetime.datetime.now())
+			rules_message = discord.Embed(title=f"Rules for the {ids.school_logo_white} Lisbon Discord!", colour=discord.Colour(0xf8e71c), description=f"We all want the {ids.school_logo_white} Lisbon Discord to be a good place for all. With that in mind, here are some basic guidelines to follow.", timestamp=datetime.datetime.now())
 			rules_message.set_footer(text="Powered by the community", icon_url=self.client.user.avatar_url)
 			rules_message.add_field(name="1. Be respectful", value="Refrain from personal attacks, derogatory language towards any particular group of people, and in general words that you would not use if not from behind a keyboard.", inline=False)
 			rules_message.add_field(name="2. Be honest", value="Don't misrepresent yourself as an 42 Student or piscineur :man_swimming: Visitors are welcome and encouraged - this is also a place to learn about 42 Lisbon.", inline=False)
@@ -116,7 +116,7 @@ class Welcome(commands.Cog):
 			role = discord.utils.get(ctx.author.guild.roles, id=ids.piscineux)
 			await ctx.message.author.edit(nick=login)
 			await ctx.message.author.add_roles(role)
-			await ctx.send("<:success:778612467567558667>")
+			await ctx.send(ids.success_kid_emoji)
 			time.sleep(1)
 			await ctx.channel.purge(limit=1)
 		else:

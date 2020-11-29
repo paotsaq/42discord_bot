@@ -25,7 +25,6 @@ class Commands(commands.Cog):
 		if(ids.staff in [x.id for x in ctx.author.roles]):
 			await ctx.channel.purge(limit=amount + 1)
 
-	# TODO: WIP
 	@commands.command()
 	async def stop(self, ctx):
 		if(ids.staff in [x.id for x in ctx.author.roles]):
