@@ -25,11 +25,31 @@ class Commands(commands.Cog):
 		if(ids.staff in [x.id for x in ctx.author.roles]):
 			await ctx.channel.purge(limit=amount + 1)
 
+	# For test server only, kills the bot even if it's running on someone else's computer
+	# To be used, only when someone has forgot to kill the bot
 	@commands.command()
 	async def stop(self, ctx):
-		if(ids.staff in [x.id for x in ctx.author.roles]):
+		test_server_id = 777686265600540682
+		if ctx.author.guild.id == test_server_id:
 			await ctx.channel.send("Logging out!")
 			await self.client.close()
+
+	# For staff only, removes every role for every user that is not staff or bot
+	# Once cleaned of its role, user receives check_rules role
+	@commands.command()
+	async def reset_roles(self, ctx):
+		check_rules_role = discord.utils.get(ctx.author.guild.roles, id=ids.check_rules)
+		if(ids.staff in [x.id for x in ctx.author.roles]):
+			async for member in ctx.guild.fetch_members(limit=None):
+				if not (ids.staff in [x.id for x in member.roles]) and not (ids.bot_role in [x.id for x in member.roles]):
+					self.client.guild = self.client.get_guild(ids.server)
+					memberObj = self.client.guild.get_member(member.id)
+					for role in memberObj.roles:
+						if not role.name == '@everyone':
+							await memberObj.remove_roles(role)
+					await member.add_roles(check_rules_role)
+
+
 
 def setup(client):
 	client.add_cog(Commands(client))
