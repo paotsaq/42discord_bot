@@ -40,21 +40,15 @@ class Commands(commands.Cog):
 			await ctx.channel.send("Logging out!")
 			await self.client.close()
 
-	# For staff only, removes every role for every user that is not staff or bot
-	# Once cleaned of its role, user receives check_rules role
+	# For staff only, apply a role to all users
 	# Was used prior to moulinette launch. Kept for now. Might be useful again
-	# @commands.command()
-	# async def reset_roles(self, ctx):
-	# 	check_rules_role = discord.utils.get(ctx.author.guild.roles, id=ids.check_rules)
-	# 	if(ids.staff in [x.id for x in ctx.author.roles]):
-	# 		async for member in ctx.guild.fetch_members(limit=None):
-	# 			if not (ids.staff in [x.id for x in member.roles]) and not (ids.bot_role in [x.id for x in member.roles]):
-	# 				self.client.guild = self.client.get_guild(ids.server)
-	# 				memberObj = self.client.guild.get_member(member.id)
-	# 				for role in memberObj.roles:
-	# 					if not role.name == '@everyone':
-	# 						await memberObj.remove_roles(role)
-	# 				await member.add_roles(check_rules_role)
+	@commands.command()
+	async def add_piscine_role(self, ctx):
+		piscine_role = discord.utils.get(ctx.author.guild.roles, id=ids.first_piscine_role)
+		if(ids.staff in [x.id for x in ctx.author.roles]):
+			async for member in ctx.guild.fetch_members(limit=None):
+				if (ids.piscineux in [x.id for x in member.roles]) or (ids.student in [x.id for x in member.roles]):
+					await member.add_roles(piscine_role)
 
 	@commands.command()
 	async def fixes(self, ctx):
@@ -66,9 +60,10 @@ class Commands(commands.Cog):
 		# Prepare a new message
 		new_welcome_message = discord.Embed(title=f"Welcome to the {ids.school_logo_white} Lisbon Discord! :raised_hands:", colour=discord.Colour(0xf8e71c), description="I'm Moulinette, and you probably know me from previous encounters. Was I too harsh with you? :robot:\n\nHere you'll be able to find motivated people to build ambitious projects with, learn a new language, or just play Among Us :video_game: but before going any further, I need to ID you!", timestamp=datetime.datetime(2020, 12, 1))
 		new_welcome_message.set_footer(text="Powered by the community", icon_url=self.client.user.avatar_url)
-		new_welcome_message.add_field(name="\u200b", value=f"**Step :one:: Login**\n- If you are a warrior that already did a piscine:\ntype `.kinit <42 login>`\n- If you are just curious about the {ids.school_logo_white} concept, click on the 🤠 icon", inline=False)
-		new_welcome_message.add_field(name="\u200b", value="**Step :two:: Select your house** (for piscineux / 42 students)\n- React to this message with the house assigned to you! :house:", inline=False)
-		new_welcome_message.add_field(name="\u200b", value=f"**Step :three:: Mute this channel**\nThere will be a lot of messages in the <#{ids.welcome}> channel so for your own sanity, I recommend you to mute this channel. To do so:\n- On your computer :computer:: right-click the <#{ids.welcome}> channel > Mute Channel > Until I turn it back on\n- On your phone :mobile_phone:: long-press on the <#{ids.welcome}> channel > Mute <#{ids.welcome}> > Until I turn it back on", inline=False)
+		new_welcome_message.add_field(name="\u200b", value=f"**Step :one:: Login**\n- If you are a warrior that already did a piscine:\ntype `.kinit <42 login>` (e.g. `.kinit moulinette`)\n- If you are just curious about the {ids.school_logo_white} concept, click on the 🤠 icon", inline=False)
+		new_welcome_message.add_field(name="\u200b", value="**Step :two:: Select your house** (for piscineux / 42 students)\nReact to this message with the house assigned to you! :house:", inline=False)
+		new_welcome_message.add_field(name="\u200b", value=f"**Step :three:: Let me know which piscine you did** (for piscineux / 42 students)\nI've prepared 2 special channels (text and voice) for your piscine where you'll be only among your fellow brothers in arms :man_swimming:\nIf that's something you would like:\ntype `.piscine <MM/YY>` (e.g. `.piscine 10/20`)\n:warning: If your piscine covered two months, input the month when you're piscine started", inline=False)
+		new_welcome_message.add_field(name="\u200b", value=f"**Step :four:: Mute this channel**\nThere will be a lot of messages in the <#{ids.welcome}> channel so for your own sanity, I recommend you to mute this channel. To do so:\n- On your computer :computer:: right-click the <#{ids.welcome}> channel > Mute Channel > Until I turn it back on\n- On your phone :mobile_phone:: long-press on the <#{ids.welcome}> channel > Mute <#{ids.welcome}> > Until I turn it back on", inline=False)
 
 		# Edit the message
 		await welcome_message.edit(embed=new_welcome_message)
