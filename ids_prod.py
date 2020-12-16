@@ -24,7 +24,6 @@ announcements = 776100638454448139
 
 # Categories
 community = 776098185344843790
-voice_chats = 776098185789177929
 
 # Custom emojis
 alliance_logo = '<:alliance:777997947668529163>'
