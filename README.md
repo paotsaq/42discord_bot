@@ -41,7 +41,7 @@ Now you can launch the environment by running `source moulinette/bin/activate`. 
 
 ### Install all dependencies
 
-To handle dependencies, we use pip. You don't need to worry about installing it because the environment you just set up will provide one for you. Run `moulinette/bin/pip list` to check if the version that was automatically installed is up to date. As of the writing of this file, the latest pip's version is v20.2.4. If you get a warning stating that a new version of pip is available or you see that your current version is older run `moulinette/bin/python -m pip install --upgrade pip`.
+To handle dependencies, we use pip. You don't need to worry about installing it because the environment you just set up will provide one for you. Run `moulinette/bin/pip list` to check if the version that was automatically installed is up to date. As of the writing of this file, the latest pip's version is v20.3.3. If you get a warning stating that a new version of pip is available or you see that your current version is older run `moulinette/bin/python -m pip install --upgrade pip`.
 
 Python programs can have a lot of dependencies so we have provided a requirements file to help you download all dependencies easily. Run `moulinette/bin/pip install -r requirements.txt`. Congratulations! You just finished setting up everything and are ready to start programming moulinette.
 

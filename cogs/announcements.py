@@ -3,8 +3,14 @@
 
 import discord
 from discord.ext import commands
-import ids
 import time
+
+# Switch between prod and dev branches
+from bot import switch, branches
+if switch == branches[0]:
+	import ids_prod as ids
+else:
+	import ids_dev as ids
 
 class Announcements(commands.Cog):
 	def __init__(self, client):

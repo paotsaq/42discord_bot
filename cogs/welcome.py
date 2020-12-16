@@ -3,12 +3,18 @@
 # - Ids the user
 # - Gives the user its role (piscineux or 42student, one of the houses)
 
-import ids
 import discord
 import requests
 import time
 import datetime
 from discord.ext import commands
+
+# Switch between prod and dev branches
+from bot import switch, branches
+if switch == branches[0]:
+	import ids_prod as ids
+else:
+	import ids_dev as ids
 
 # If houses also has the visitor, it's to not over-complicate the remove on_raw_reaction_remove function
 houses = {
@@ -195,12 +201,18 @@ class Welcome(commands.Cog):
 	# Removing the role if the user takes away the reaction
 	@commands.Cog.listener()
 	async def on_raw_reaction_remove(self, payload):
+	# Creating the attribute guild to self.client. Here guild is the server
+		self.client.guild = self.client.get_guild(ids.server)
+		member = self.client.guild.get_member(payload.user_id)
 		if payload.message_id == self.welcome_message.id:
-			# Creating the attribute guild to self.client. Here guild is the server
-			self.client.guild = self.client.get_guild(ids.server)
 			role = self.client.guild.get_role(houses[payload.emoji.name])
-			member = self.client.guild.get_member(payload.user_id)
 			await member.remove_roles(role)
+		elif payload.message_id == self.congrats_message.id:
+			role_student = self.client.guild.get_role(ids.student)
+			role_piscineux = self.client.guild.get_role(ids.piscineux)
+			await member.remove_roles(role_student)
+			await member.add_roles(role_piscineux)
+
 
 	# Adds the role "Check Rules" when a new user enters the server
 	@commands.Cog.listener()
