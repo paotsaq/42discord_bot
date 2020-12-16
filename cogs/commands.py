@@ -79,7 +79,5 @@ class Commands(commands.Cog):
 		# Edit the message
 		await congrats_message.edit(embed=new_congrats_message)
 
-
-
 def setup(client):
 	client.add_cog(Commands(client))
