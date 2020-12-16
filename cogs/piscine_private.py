@@ -75,22 +75,15 @@ class Piscine_private(commands.Cog):
 			if not role_exists(name_role, ctx):
 				# Creating role
 				piscine_role = await ctx.guild.create_role(name=name_role)
-				# Creating the text and voice channels
-				# Text channel
+				# Creating the text channel
 				community = discord.utils.get(ctx.guild.categories, id=ids.community)
 				new_text_channel = await ctx.guild.create_text_channel(name_role, category=community, topic=f"A cosier place to discuss with your fellow brothers in arms from the piscine :man_swimming: but remember that if you need help fixing a bug or look for people to play lol, you'll find more people available on the general channels {ids.think_emoji}")
-				# Voice channel
-				name = f"Piscine {index}" if index >= 10 else f"Piscine 0{index}"
-				voice_chats = discord.utils.get(ctx.guild.categories, id=ids.voice_chats)
-				new_voice_channel = await ctx.guild.create_voice_channel(name, category=voice_chats)
-				# Changing permissions for both channels
+				# Changing the permissions of the channel
 				# Taking away the access to the channel from every role
 				for role in ctx.guild.roles:
 					await new_text_channel.set_permissions(role, read_messages=False)
-					await new_voice_channel.set_permissions(role, view_channel=False)
 				# Giving back access only to name_role (e.g. piscine-00)
 				await new_text_channel.set_permissions(piscine_role, read_messages=True)
-				await new_voice_channel.set_permissions(piscine_role, view_channel=True)
 			# Assigning the role
 			# Outside if statement because the assignement needs to take place either the role exists or not
 			role = discord.utils.get(ctx.guild.roles, name=name_role)
