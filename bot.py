@@ -17,10 +17,13 @@
 # - @commands.Cog.listener(): basically every other event like a message is sent or the bot starts
 
 from dotenv import load_dotenv
-
 import discord
 import os
 from discord.ext import commands
+
+# Switch between prod and dev branches
+branches = ["prod", "dev"]
+switch = branches[0]
 
 # Gives the bots additionnal permissions
 # Defines the prefix for commands
@@ -46,5 +49,8 @@ for filename in os.listdir('./cogs'):
 		client.load_extension(f'cogs.{filename[:-3]}')
 
 load_dotenv()
-token = os.environ.get("TOKEN")
+if switch == branches[0]:
+	token = os.environ.get("TOKEN_PROD")
+else:
+	token = os.environ.get("TOKEN_DEV")
 client.run(token)
