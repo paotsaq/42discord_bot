@@ -21,6 +21,8 @@ class Rosters(commands.Cog):
 	def dict_writer(self, action, game, nick=None):
 		if action == 'create':
 			self.rosters_dict[game] = []
+		elif action == 'delete':
+			del self.rosters_dict[game]
 		elif action == 'add':
 			self.rosters_dict[game].append(nick)
 		else:
@@ -53,9 +55,10 @@ class Rosters(commands.Cog):
 	async def roster(self, ctx, action, game="None"):
 		#TODO REMOVE BOT!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		await ctx.channel.purge(limit=1)
-		if action == 'create':
+		if action in {'create', 'delete'}:
 			if ('staff' in [x.name for x in ctx.author.roles] or 'bot' in [x.name for x in ctx.author.roles]):
-				await ctx.send(f"They brought the big guns! :scream: Let's add {game} to the rosters...my master {ctx.author.nick}!")
+				verb = 'add' if action == create else 'remove'
+				await ctx.send(f"They brought the big guns! :scream: Let's {verb} {game} to the rosters...my master {ctx.author.nick}!")
 				self.dict_writer(action, game)
 			else:
 				await ctx.send(f"I cannot pursue the actions you so tenderly wish...remember that I am *very* strict and mean!")
