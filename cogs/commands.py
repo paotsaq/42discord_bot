@@ -57,6 +57,7 @@ class Commands(commands.Cog):
 		welcome_channel = self.client.get_channel(ids.welcome)
 		welcome_message = await welcome_channel.fetch_message(ids.welcome_message)
 
+
 		# Prepare a new message
 		new_welcome_message = discord.Embed(title=f"Welcome to the {ids.school_logo_white} Lisbon Discord! :raised_hands:", colour=discord.Colour(0xf8e71c), description="I'm Moulinette, and you probably know me from previous encounters. Was I too harsh with you? :robot:\n\nHere you'll be able to find motivated people to build ambitious projects with, learn a new language, or just play Among Us :video_game: but before going any further, I need to ID you!", timestamp=datetime.datetime(2020, 12, 1, 18, 42, 00))
 		new_welcome_message.set_footer(text="Powered by the community", icon_url=self.client.user.avatar_url)
@@ -78,6 +79,10 @@ class Commands(commands.Cog):
 
 		# Edit the message
 		await congrats_message.edit(embed=new_congrats_message)
+
+	@commands.command()
+	async def list_users(self, ctx):
+		print(self.client.users)
 
 def setup(client):
 	client.add_cog(Commands(client))
