@@ -37,13 +37,14 @@ class AssignsRole(commands.Cog):
 
 	@commands.command()
 	async def attribute_roles(self, ctx):
-		await ctx.message.delete()
-		guild = self.client.get_guild(ids.guild_id)
-		for user in guild.members:
-			for team in users.keys():
-				if user.display_name in users[team]:
-					snowflake = discord.Object(match_coalition_to_id[team])
-					await user.add_roles(snowflake)
+		if(ids.staff in [x.id for x in ctx.author.roles]):
+			await ctx.message.delete()
+			guild = self.client.get_guild(ids.guild_id)
+			for user in guild.members:
+				for team in users.keys():
+					if user.display_name in users[team]:
+						snowflake = discord.Object(match_coalition_to_id[team])
+						await user.add_roles(snowflake)
 
 def setup(client):
 	client.add_cog(AssignsRole(client))
