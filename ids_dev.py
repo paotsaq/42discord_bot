@@ -3,6 +3,9 @@
 # To find a ID of a role, channel, user or even a message:
 # 1. Go to User settings (bottom left, the gear next to the headphones)
 # 2. Apperance > Advanced > Check Developer Mode
+# 3. Right-button over any interface object (user, server, emoji) and select 'Copy ID'
+
+guild_id = 777686265600540682
 
 # Roles
 alliance = 778267876083761163
@@ -16,6 +19,9 @@ visitor = 778636804319608852
 check_rules = 779748257261551617
 bot_role = 777686540738232340
 first_piscine_role = 788785134916599808
+jetsons = 809999044335632396
+simpsons = 810000198494453770
+flinstones = 810000353738358814
 
 # Channels
 rules = 779708218812137493

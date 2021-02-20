@@ -4,6 +4,8 @@
 # 1. Go to User settings (bottom left, the gear next to the headphones)
 # 2. Apperance > Advanced > Check Developer Mode
 
+guild_id = 776098185344843786
+
 # Roles
 alliance = 777247454684381224
 assembly = 777247546166476810
@@ -16,6 +18,9 @@ visitor = 782281204254375966
 check_rules = 782281106388287519
 bot_role = 783368311806623814
 first_piscine_role = 788899479787929600
+jetsons = 812546879131746315
+simpsons = 812547002608386108
+flinstones = 812547076650827786
 
 # Channels
 rules = 776098185344843788
