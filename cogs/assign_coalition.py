@@ -6,6 +6,7 @@ from discord.ext import commands
 import re
 import time
 import json
+import datetime
 
 # Switch between prod and dev branches
 from bot import switch, branches
@@ -13,7 +14,6 @@ if switch == branches[0]:
 	import ids_prod as ids
 else:
 	import ids_dev as ids
-
 
 def fetch_users(path_to_database):
     json_file = open(path_to_database, 'r')
@@ -26,9 +26,9 @@ def fetch_users(path_to_database):
 users = fetch_users("database/coalition_users.json")
 
 match_coalition_to_id = {
-	'119': "jetsons",
-	'120': "simpsons",
-	'121': "flinstones"
+	'119': ids.jetsons,
+	'120': ids.simpsons,
+	'121': ids.flinstones
 }
 
 class AssignsRole(commands.Cog):
@@ -38,12 +38,12 @@ class AssignsRole(commands.Cog):
 	@commands.command()
 	async def attribute_roles(self, ctx):
 		await ctx.message.delete()
-		for user in self.list_users:
+		guild = self.client.get_guild(ids.guild_id)
+		for user in guild.members:
 			for team in users.keys():
-				if user.nick in users[team]:
-					self.client.user.add_roles(match_coalition_to_id[team])
-
-
+				if user.display_name in users[team]:
+					snowflake = discord.Object(match_coalition_to_id[team])
+					await user.add_roles(snowflake)
 
 def setup(client):
 	client.add_cog(AssignsRole(client))
