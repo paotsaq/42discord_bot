@@ -7,13 +7,14 @@ import json
 
 PATH_TO_BUDDIES_DICT = "./cogs/resources/rosters_dict.json"
 
-# initializes the BuddyDatabase class, with some dictionary handling methods, that handles read/write to the dictionaries.
+# the BuddyDatabase class will organize a database with possible buddies to be matched. The info about each candidate buddy will be collected through DM's.
 class BuddyDatabase(commands.Cog):
 	def __init__(self, client):
 		self.client = client
 		self.buddies_dict = {}
 		self.dict_loader()
 
+	# dict handling methods can be done with the dictionary script.
 	def dict_loader(self):
 		json_file = open(PATH_TO_BUDDIES_DICT, 'r')
 		self.buddies_dict = json.load(json_file)
@@ -33,24 +34,10 @@ class BuddyDatabase(commands.Cog):
 		json_file.close()
 		self.dict_loader()
 
-	@commands.command(aliases = ['r'])
-	async def codingbuddy(self, ctx, action, game="None"):
+	@commands.command()
+	async def codingbuddy(self, ctx):
 		await ctx.channel.purge(limit=1)
-
-		if action in {'create', 'delete'}:
-			if ('staff' in [x.name for x in ctx.author.roles] or 'bot' in [x.name for x in ctx.author.roles]):
-				verb = 'add' if action == create else 'remove'
-				await ctx.send(f"They brought the big guns! :scream: Let's {verb} {game} to the rosters...my master {ctx.author.nick}!")
-				self.dict_writer(action, game)
-			else:
-				await ctx.send(f"I cannot pursue the actions you so tenderly wish...remember that I am *very* strict and mean!")
-		# assumes game
-		elif action in {'add', 'remove'}:
-			self.dict_writer(action, game, name)
-			verb = 'added' if action == 'add' else 'removed'
-			await ctx.send(f"We are led to believe you, {name}, were {verb} to the {game} roster!")
-		elif action == 'show':
-			await ctx.send(self.roster_printer(game))
+		await ctx.author.send("*beep bop* Do I hear there's going to be a new bot feature soon?... 🤖")
 
 def setup(client):
-	client.add_cog(Rosters(client))
+	client.add_cog(BuddyDatabase(client))
