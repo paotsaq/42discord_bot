@@ -1,6 +1,7 @@
-token.txt
+.env
 .vscode
 **.ignore
 **.pdf
 **pycache**
 **.pyc
+moulinette/

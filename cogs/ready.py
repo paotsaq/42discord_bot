@@ -6,10 +6,9 @@ import discord
 from discord.ext import commands, tasks
 from itertools import cycle
 
-status = cycle([
-	'chess with Norminette', 'csgo  with Norminette', 'lol with Norminette',
-	'Among Us with Norminette'
-])
+status = cycle([x + ' with Norminette' for x in [
+	'chess', 'csgo', 'lol', 'Among Us', 'Minecraft','CodinGame'
+]])
 
 class Ready(commands.Cog):
 	def __init__(self, client):
@@ -20,7 +19,7 @@ class Ready(commands.Cog):
 		self.change_status.start()
 		print('We have logged in as {0.user}'.format(self.client))
 
-	@tasks.loop(seconds=10)
+	@tasks.loop(minutes=5)
 	async def change_status(self):
 		await self.client.change_presence(activity=discord.Game(next(status)))
 

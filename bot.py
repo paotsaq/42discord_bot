@@ -16,9 +16,14 @@
 # - @commands.command(): response to a command following the pattern defined in bot.py (i.e. .<command name>)
 # - @commands.Cog.listener(): basically every other event like a message is sent or the bot starts
 
+from dotenv import load_dotenv
 import discord
 import os
 from discord.ext import commands
+
+# Switch between prod and dev branches
+branches = ["prod", "dev"]
+switch = branches[0]
 
 # Gives the bots additionnal permissions
 # Defines the prefix for commands
@@ -31,7 +36,8 @@ async def load(ctx, extension):
 
 @client.command()
 async def unload(ctx, extension):
-	client.unload_extension(f'cogs.{extension}')
+	if('staff' in [x.name for x in ctx.author.roles]):
+		client.unload_extension(f'cogs.{extension}')
 
 @client.command()
 async def reload(ctx, extension):
@@ -42,7 +48,9 @@ for filename in os.listdir('./cogs'):
 	if filename.endswith('.py'):
 		client.load_extension(f'cogs.{filename[:-3]}')
 
-f = open('token.txt', 'r')
-token = f.read()
-f.close()
+load_dotenv()
+if switch == branches[0]:
+	token = os.environ.get("TOKEN_PROD")
+else:
+	token = os.environ.get("TOKEN_DEV")
 client.run(token)
