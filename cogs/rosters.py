@@ -50,55 +50,44 @@ class Rosters(commands.Cog):
 		json_file.close()
 		self.dict_loader()
 
+	async def checks_valid_input(self, ctx, game, action, nickname):
+		if valid_perms(ctx.author.roles):
+			if game is not None:
+				if game not in self.rosters_dict.keys():
+					return True
+				else:
+					await ctx.send(f"{game} was already {verb} {prep} the rosters!")
+			else:
+				await ctx.send(f"⚠️ That's a no no...because the game parameter was null!!\n{self.help_string()}")
+		else:
+			ctx.send(f"⚠️ That's a no no... do you, ``ctx.author.nick``, not have ``{action}`` permissions!")
+
+
 	# command syntax:
 	# .r [action] [name_of_roster]
 	@commands.command(aliases = ['r'])
 	async def roster(self, ctx, action, game=None, nickname=None):
-		name = nickname if valid_perms(ctx.author.roles) else ctx.author.nick
+		name = nickname if valid_perms(ctx.author.roles) and nickname else ctx.author.nick
 		# await ctx.channel.purge(limit=1)
-		#TODO correctly handle creation and deletion
-		if action == 'create':
-			if valid_perms(ctx.author.roles):
-				if game is not None:
-					if game not in self.rosters_dict.keys():
-						if action == 'create':
-							game_role = await ctx.guild.create_role(name=fetch_role_name(game), color=ROLE_COLOR, mentionable=True)
-						await ctx.send(f"{game} was added to the rosters!")
-						self.dict_writer(action, game)
-					else:
-						verb, prep = ('added', 'to')
-						await ctx.send(f"{game} was already {verb} {prep} the rosters!")
-				else:
-					await ctx.send(f"⚠️ That's a no no...because the game parameter was null!!\n{self.help_string()}")
-			else:
-				ctx.send(f"⚠️ That's a no no... do you, ``ctx.author.nick``, not have ``{action}`` permissions!")
-		elif action == 'delete':
-			if valid_perms(ctx.author.roles):
-				if game is not None:
-					print(f'{ctx.author} requested removal of {game} with perms!')
-					if game not in self.rosters_dict.keys():
-						await ctx.send(f"{game} doesn\'t exist in the rosters!")
-					else:
-						print(ctx.guild.roles)
-						role = discord.utils.get(ctx.guild.roles, name=fetch_role_name(game))
-						try:
-							await role.delete()
-						except AttributeError:
-							print(f"The role {fetch_role_name(game)} didn't exist!")
-						self.dict_writer(action, game)
-						await ctx.send(f"Roster for {game} successfully deleted!")
-
-				else:
-					await ctx.send(f"⚠️ That's a no no...because the game parameter was null!!\n{self.help_string()}")
-
+		if action == 'create' and self.checks_valid_input(ctx, game, action, nickname):
+			game_role = await ctx.guild.create_role(name=fetch_role_name(game), color=ROLE_COLOR, mentionable=True)
+			self.dict_writer(action, game)
+			await ctx.send(f"{game} was added to the rosters!")
+		elif action == 'delete' and self.checks_valid_input(ctx, game, action, nickname):
+			role = discord.utils.get(ctx.guild.roles, name=fetch_role_name(game))
+			try:
+				await role.delete()
+				self.dict_writer(action, game)
+				await ctx.send(f"Roster for {game} successfully deleted!")
+			except AttributeError:
+				print(f"The role {fetch_role_name(game)} didn't exist!")
 		#TODO regular users should only be able to manage THEMSELVES
-		#TODO staff cannot attribute role to others because of line 99 - ctx.message.AUTHOR
 		elif action in {'add', 'remove'}:
 			if game and game in self.rosters_dict.keys():
 				verb, prep = ('added', 'to') if action == 'add' else ('removed', 'from')
 				role = discord.utils.get(ctx.guild.roles, name=fetch_role_name(game))
 				if action == 'add':
-					if name in self.rosters_dict[game]:
+					if name not in self.rosters_dict[game]:
 						self.dict_writer(action, game, name)
 						await ctx.send(f"{name} was {verb} to the {game} roster!")
 						await ctx.message.author.add_roles(role)
@@ -141,3 +130,5 @@ class Rosters(commands.Cog):
 
 def setup(client):
 	client.add_cog(Rosters(client))
+
+	so this is a test
