@@ -51,6 +51,7 @@ class Rosters(commands.Cog):
 		self.dict_loader()
 
 	async def checks_valid_input(self, ctx, game, action, nickname):
+		print(f'{nickname} perms: {valid_perms(ctx.author.roles)}')
 		if valid_perms(ctx.author.roles):
 			if game is not None:
 				if game not in self.rosters_dict.keys():
@@ -60,8 +61,7 @@ class Rosters(commands.Cog):
 			else:
 				await ctx.send(f"⚠️ That's a no no...because the game parameter was null!!\n{self.help_string()}")
 		else:
-			ctx.send(f"⚠️ That's a no no... do you, ``ctx.author.nick``, not have ``{action}`` permissions!")
-
+			await ctx.send(f"⚠️ That's a no no... you, {ctx.author.nick}, do not have ``{action}`` permissions!")
 
 	# command syntax:
 	# .r [action] [name_of_roster]
@@ -69,39 +69,44 @@ class Rosters(commands.Cog):
 	async def roster(self, ctx, action, game=None, nickname=None):
 		name = nickname if valid_perms(ctx.author.roles) and nickname else ctx.author.nick
 		# await ctx.channel.purge(limit=1)
-		if action == 'create' and self.checks_valid_input(ctx, game, action, nickname):
+		if action == 'create' and await self.checks_valid_input(ctx, game, action, nickname):
 			game_role = await ctx.guild.create_role(name=fetch_role_name(game), color=ROLE_COLOR, mentionable=True)
 			self.dict_writer(action, game)
 			await ctx.send(f"{game} was added to the rosters!")
-		elif action == 'delete' and self.checks_valid_input(ctx, game, action, nickname):
+		elif action == 'delete' and await self.checks_valid_input(ctx, game, action, nickname):
 			role = discord.utils.get(ctx.guild.roles, name=fetch_role_name(game))
 			try:
-				await role.delete()
 				self.dict_writer(action, game)
-				await ctx.send(f"Roster for {game} successfully deleted!")
+				await ctx.send(f"Roster for {game} successfully deleted (if it existed)!")
+			except KeyError:
+				await ctx.send(f"Roster for {game} didn't exist!")
+			try:
+				await role.delete()
+				await ctx.send(f"Role for {game} successfully deleted!")
 			except AttributeError:
 				print(f"The role {fetch_role_name(game)} didn't exist!")
-		#TODO regular users should only be able to manage THEMSELVES
 		elif action in {'add', 'remove'}:
-			if game and game in self.rosters_dict.keys():
-				verb, prep = ('added', 'to') if action == 'add' else ('removed', 'from')
-				role = discord.utils.get(ctx.guild.roles, name=fetch_role_name(game))
-				if action == 'add':
-					if name not in self.rosters_dict[game]:
-						self.dict_writer(action, game, name)
-						await ctx.send(f"{name} was {verb} to the {game} roster!")
-						await ctx.message.author.add_roles(role)
-					else:
-						await ctx.send(f"{name} was already previously {verb} {prep} the {game} roster!")
-				elif action == 'remove':
-					if name in self.rosters_dict[game]:
-						self.dict_writer(action, game, name)
-						await ctx.message.author.remove_roles(role)
-						await ctx.send(f"{name} was removed from the {game} roster!")
-					else:
-						await ctx.send(f"{name} wasn't in the {game} roster...!")
+			if game and game != ctx.message.author.nick:
+				if game in self.rosters_dict.keys():
+					role = discord.utils.get(ctx.guild.roles, name=fetch_role_name(game))
+					if action == 'add':
+						if name not in self.rosters_dict[game]:
+							self.dict_writer(action, game, name)
+							await ctx.send(f"{name} was added to the {game} roster!")
+							await ctx.message.author.add_roles(role)
+						else:
+							await ctx.send(f"{name} was already previously added to the {game} roster!")
+					elif action == 'remove':
+						if name in self.rosters_dict[game]:
+							self.dict_writer(action, game, name)
+							await ctx.message.author.remove_roles(role)
+							await ctx.send(f"{name} was removed from the {game} roster!")
+						else:
+							await ctx.send(f"{name} wasn't in the {game} roster...!")
+				else:
+					await ctx.send(f"⚠️ That's a no no...because the game doesn't exist on the roster!!\n{self.help_string()}")
 			else:
-				await ctx.send(f"⚠️ That's a no no...because the game doesn't exist on the roster!!\n{self.help_string()}")
+				await ctx.send(f"⚠️ That's a no no...because the game parameter was null!\n{self.help_string()}")
 		elif action == 'show':
 			await ctx.send(self.roster_printer(game))
 		elif action in ['help', 'h']:
@@ -109,7 +114,10 @@ class Rosters(commands.Cog):
 
 	def roster_printer(self, game=None):
 		if not game:
-			return "These are the current rosters:\n" + " | ".join(list(self.rosters_dict.keys())) + "| "
+			if not self.rosters_dict:
+				return "There are no rosters!"
+			else:
+				return "These are the current rosters:\n" + " | ".join(list(self.rosters_dict.keys())) + "| "
 		elif game not in self.rosters_dict.keys():
 			return ("This game was not yet added...request the help of someone with permissions (try #bocal-but-not-really!)")
 		else:
@@ -130,5 +138,3 @@ class Rosters(commands.Cog):
 
 def setup(client):
 	client.add_cog(Rosters(client))
-
-	so this is a test
