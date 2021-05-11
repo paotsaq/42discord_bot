@@ -5,9 +5,10 @@ import discord
 from discord.ext import commands
 import json
 
-PATH_TO_ROSTERS_DICT = "./cogs/resources/rosters_dict.json"
+PATH_TO_ROSTERS_DICT = "./rosters_dict.json"
 #TODO remove bot from perms
 #TODO introduce alias to games
+ACTIONS = ['create', 'delete', 'add', 'remove', 'show']
 ROLE_COLOR = discord.colour.Colour.from_rgb(212, 247, 49)
 VALID_ROLES = ['staff', 'bot']
 is_valid_role = lambda role: role.name in VALID_ROLES
@@ -29,12 +30,17 @@ class Rosters(commands.Cog):
 	def help_string(self):
 		return "roster syntax: ``.r action game [user]``"
 
-	# Use dictionary wrapper on this.
+	#TODO wrap this on dictionary
 	def dict_loader(self):
-		json_file = open(PATH_TO_ROSTERS_DICT, 'r')
-		self.rosters_dict = json.load(json_file)
-		print(self.rosters_dict)
-		json_file.close()
+		try:
+			json_file = open(PATH_TO_ROSTERS_DICT, 'r')
+			self.rosters_dict = json.load(json_file)
+			print(self.rosters_dict)
+			json_file.close()
+		except FileNotFoundError:
+			json_file = open(PATH_TO_ROSTERS_DICT, 'w')
+			json.dump({}, json_file)
+			print(f"""There is no file for {PATH_TO_ROSTERS_DICT}!\n Backup is recreating rosters from discord roles""")
 
 	def dict_writer(self, action, game, nick=None):
 		if action == 'create':
@@ -57,7 +63,7 @@ class Rosters(commands.Cog):
 				if game not in self.rosters_dict.keys():
 					return True
 				else:
-					await ctx.send(f"{game} was already {verb} {prep} the rosters!")
+					await ctx.send(f"{game} was already added to the rosters!")
 			else:
 				await ctx.send(f"⚠️ That's a no no...because the game parameter was null!!\n{self.help_string()}")
 		else:
@@ -67,13 +73,14 @@ class Rosters(commands.Cog):
 	# .r [action] [name_of_roster]
 	@commands.command(aliases = ['r'])
 	async def roster(self, ctx, action, game=None, nickname=None):
+
 		name = nickname if valid_perms(ctx.author.roles) and nickname else ctx.author.nick
 		# await ctx.channel.purge(limit=1)
 		if action == 'create' and await self.checks_valid_input(ctx, game, action, nickname):
 			game_role = await ctx.guild.create_role(name=fetch_role_name(game), color=ROLE_COLOR, mentionable=True)
 			self.dict_writer(action, game)
 			await ctx.send(f"{game} was added to the rosters!")
-		elif action == 'delete' and await self.checks_valid_input(ctx, game, action, nickname):
+		elif action == 'delete' and valid_perms(ctx.author.roles):
 			role = discord.utils.get(ctx.guild.roles, name=fetch_role_name(game))
 			try:
 				self.dict_writer(action, game)
