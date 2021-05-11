@@ -52,7 +52,6 @@ class BuddyDatabase(commands.Cog):
 
 	@commands.command()
 	async def codingbuddy(self, ctx):
-		# def regex_match(user_reply, regex):
 		await ctx.channel.purge(limit=1)
 		await ctx.author.send("*beep bop* Do I hear you want to join the *Coding Buddy* programme?... 🤖")
 		async with ctx.channel.typing():
