@@ -2,6 +2,8 @@
 # listens for reactions on server;
 # if a message has n-CONST 📌 reactions, it gets pinned.
 
+#TODO CONST should be changed with moulinette input on discord
+
 import discord
 from discord.ext import commands
 
