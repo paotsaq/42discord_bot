@@ -5,7 +5,7 @@
 import discord
 from discord.ext import commands
 
-CONST = 1
+CONST = 4
 
 class Pinned(commands.Cog):
 	def __init__(self, client):
