@@ -18,8 +18,10 @@ class Pinned(commands.Cog):
 		if str(payload.emoji) == "📌":
 			channel = self.client.get_channel(payload.channel_id)
 			message = await channel.fetch_message(payload.message_id)
-			if message.reactions[0].count >= CONST:
-				await message.pin()
+			for reaction in message.reactions:
+				if reaction.emoji == "📌" and reaction.count >= CONST:
+					await message.pin()
+
 
 def setup(client):
 	client.add_cog(Pinned(client))
