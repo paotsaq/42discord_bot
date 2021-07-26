@@ -58,6 +58,5 @@ class Message(commands.Cog):
 					'OMG this is so exciting!!1! \nPlease click the link! :point_right: <https://bit.ly/3qgV6jf> :rocket:\n'
 				)
 
-
 def setup(client):
 	client.add_cog(Message(client))
