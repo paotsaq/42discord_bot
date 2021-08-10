@@ -16,6 +16,7 @@
 # - @commands.command(): response to a command following the pattern defined in bot.py (i.e. .<command name>)
 # - @commands.Cog.listener(): basically every other event like a message is sent or the bot starts
 
+import scripts
 from dotenv import load_dotenv
 import discord
 import os
@@ -23,7 +24,7 @@ from discord.ext import commands
 
 # Switch between prod and dev branches
 branches = ["prod", "dev"]
-switch = branches[0]
+switch = branches[1]
 
 # Gives the bots additionnal permissions
 # Defines the prefix for commands
@@ -53,4 +54,6 @@ if switch == branches[0]:
 	token = os.environ.get("TOKEN_PROD")
 else:
 	token = os.environ.get("TOKEN_DEV")
+
+create_user_database()
 client.run(token)
