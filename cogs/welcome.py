@@ -8,6 +8,7 @@ import requests
 import time
 import datetime
 from discord.ext import commands
+import text_messages as tm
 
 # Switch between prod and dev branches
 from bot import switch, branches
@@ -17,60 +18,67 @@ else:
 	import ids_dev as ids
 
 # If houses also has the visitor, it's to not over-complicate the remove on_raw_reaction_remove function
+
+house_names = ["order", "federation", "alliance", "assembly", "visitor"]
+
 houses = {
-	'🤠': ids.visitor,
-	'alliance': ids.alliance,
-	'assembly': ids.assembly,
-	'federation': ids.federation,
-	'order': ids.order,
+	'visitor': {
+		"id": ids.visitor,
+		"logo": "🤠"
+		},
+	'alliance': {
+		"id": ids.alliance,
+		"logo": ids.alliance_logo
+		},
+	'assembly': {
+		"id": ids.assembly,
+		"logo": ids.assembly_logo
+		},
+	'order': {
+		"id": ids.order,
+		"logo": ids.order_logo
+		},
+	'federation': {
+		"id": ids.federation,
+		"logo": ids.federation_logo
+		}
 }
+
+house_logos = [houses[house]["logo"] for house in houses]
+
+async def add_reactions_to_message(message, reactions):
+	"""Reactions is a list of discord emojis"""
+	for reaction in reactions:
+		await message.add_reaction(reaction)
 
 class Welcome(commands.Cog):
 	def __init__(self, client):
 		self.client = client
 
-	@commands.Cog.listener()
-	async def on_ready(self, channel: discord.TextChannel = None):
-		# Welcome Channel
-		# Each time the bot starts, he counts the number of messages in the welcome channel
-		# If 0, he adds the welcome message and the congrats message
-		# If 2, he takes the id of the 2 only existing messages
-		# In each case he saves the first message in self.welcome_message and the second in
-		# self.congrats_message for use later
-		channel = discord.utils.get(self.client.get_all_channels(),
-									id=ids.welcome)
-		# Counting the number of messages in #welcome
-		# The message are looped from recent to older
-		welcome_count = 0
-		async for message_in_welcome in channel.history(limit=None):
-			welcome_count += 1
-		# Case: 2 messages exist in the channel
-			if welcome_count == 1:
-				congrats_message = message_in_welcome
-			elif welcome_count == 2:
-				welcome_message = message_in_welcome
-		# Case: no messages in #welcome
-		if welcome_count == 0:
-			# Writing the welcome_message and adding its reactions
-			welcome_message_embed = discord.Embed(title=f"Welcome to the {ids.school_logo_white} Lisbon Discord! :raised_hands:", colour=discord.Colour(0xf8e71c), description="I'm Moulinette, and you probably know me from previous encounters. Was I too harsh with you? :robot:\n\nHere you'll be able to find motivated people to build ambitious projects with, learn a new language, or just play Among Us :video_game: but before going any further, I need to ID you!", timestamp=datetime.datetime.now())
-			welcome_message_embed.set_footer(text="Powered by the community", icon_url=self.client.user.avatar_url)
-			welcome_message_embed.add_field(name="Login", value="If you are a warrior that already did a piscine:\ntype `.kinit <42 login>`\n\nIf you are just curious about the 42 concept, click on the 🤠 icon", inline=False)
-			welcome_message_embed.add_field(name="House", value="For _piscineux_, react to this message with the house assigned to you during the piscine! :man_swimming:", inline=False)
-			welcome_message = await channel.send(embed=welcome_message_embed)
-			await welcome_message.add_reaction("🤠")
-			await welcome_message.add_reaction(ids.alliance_logo)
-			await welcome_message.add_reaction(ids.assembly_logo)
-			await welcome_message.add_reaction(ids.federation_logo)
-			await welcome_message.add_reaction(ids.order_logo)
-			# Writing the congrats_message and adding its reactions
-			congrats_message_embed = discord.Embed(title="Two weeks have passed since your piscine and the results are up? :scream:", colour=discord.Colour(0xf8e71c), description=f"\*If the results have yet to arrive in your inbox (or spam), don't worry, they probably are on their way. In the meantime, feel free to kill some time here* :video_game:\n\nAre you part of the lucky few that got in? On behalf of all the 42 Lisboa community (and my friend the Norminette), we congratulate you for this amazing feat {ids.success_kid_emoji}\nTo change your role from \"piscineux\" to \"42student\", **react to this message with the {ids.school_logo_white} logo**\n\nIf not, fear not. The community will always be here for you and you can still try again next year stronger than ever {ids.think_emoji}\n\nN.B. there are no private channels only for 42 students, the role \"42student\" exists only for convinience in case someone whats to mention all 42 students at once {ids.shipit_emoji}", timestamp=datetime.datetime.now())
-			congrats_message_embed.set_footer(text="Powered by the community", icon_url=self.client.user.avatar_url)
-			congrats_message = await channel.send(embed=congrats_message_embed)
-			await congrats_message.add_reaction(ids.school_logo_white)
+	async def make_welcome_message(self, channel):
+		welcome_message_embed = discord.Embed(
+				title=tm.WELCOME_MESSAGE_TITLE,
+				colour=discord.Colour(0xf8e71c),
+				description=tm.WELCOME_MESSAGE_INTRO, timestamp=datetime.datetime.now())
+		welcome_message_embed.set_footer(text="Powered by the community", icon_url=self.client.user.avatar_url)
+		welcome_message_embed.add_field(name="1. Login", value="If you are a warrior that already did a piscine:\ntype `.kinit <42 login>`\n\nIf you are just curious about the 42 concept, click on the 🤠 icon", inline=False)
+		welcome_message_embed.add_field(name="2. House", value="For _piscineux_, react to this message with the house assigned to you during the piscine! :man_swimming:", inline=False)
+		welcome_message = await channel.send(embed=welcome_message_embed)
+		await add_reactions_to_message(welcome_message, house_logos)
 		# Add 2 attributes to self for the function on_raw_reaction_add
 		self.welcome_message = await self.client.get_channel(ids.welcome).fetch_message(welcome_message.id)
-		self.congrats_message = await self.client.get_channel(ids.welcome).fetch_message(congrats_message.id)
 
+	@commands.Cog.listener()
+	async def on_ready(self, channel: discord.TextChannel = None):
+		channel = discord.utils.get(self.client.get_all_channels(),
+									id=ids.welcome)
+
+		# Writing the welcome_message and adding its reactions
+		message_count = 0
+		async for message in channel.history(limit=None):
+			message_count += 1
+		if message_count == 0:
+			await self.make_welcome_message(channel)
 		# Rules Channel
 		# Each time the bot starts, he counts the number of messages in the welcome channel
 		# If 0, he adds the welcome message and the initial house reactions
@@ -212,7 +220,6 @@ class Welcome(commands.Cog):
 			role_piscineux = self.client.guild.get_role(ids.piscineux)
 			await member.remove_roles(role_student)
 			await member.add_roles(role_piscineux)
-
 
 	# Adds the role "Check Rules" when a new user enters the server
 	@commands.Cog.listener()
