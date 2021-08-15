@@ -55,5 +55,4 @@ if switch == branches[0]:
 else:
 	token = os.environ.get("TOKEN_DEV")
 
-create_user_database()
 client.run(token)

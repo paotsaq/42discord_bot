@@ -37,7 +37,7 @@ class AssignsRole(commands.Cog):
 		self.client = client
 
 	@commands.command()
-	async def attribute_roles(self, ctx):
+	async def attribute_42roles(self, ctx):
 		if(ids.staff in [x.id for x in ctx.author.roles]):
 			await ctx.message.delete()
 			guild = self.client.get_guild(ids.guild_id)

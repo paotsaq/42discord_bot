@@ -46,8 +46,6 @@ class Welcome(commands.Cog):
 			welcome_count += 1
 		# Case: 2 messages exist in the channel
 			if welcome_count == 1:
-				congrats_message = message_in_welcome
-			elif welcome_count == 2:
 				welcome_message = message_in_welcome
 		# Case: no messages in #welcome
 		if welcome_count == 0:
@@ -63,13 +61,8 @@ class Welcome(commands.Cog):
 			await welcome_message.add_reaction(ids.federation_logo)
 			await welcome_message.add_reaction(ids.order_logo)
 			# Writing the congrats_message and adding its reactions
-			congrats_message_embed = discord.Embed(title="Two weeks have passed since your piscine and the results are up? :scream:", colour=discord.Colour(0xf8e71c), description=f"\*If the results have yet to arrive in your inbox (or spam), don't worry, they probably are on their way. In the meantime, feel free to kill some time here* :video_game:\n\nAre you part of the lucky few that got in? On behalf of all the 42 Lisboa community (and my friend the Norminette), we congratulate you for this amazing feat {ids.success_kid_emoji}\nTo change your role from \"piscineux\" to \"42student\", **react to this message with the {ids.school_logo_white} logo**\n\nIf not, fear not. The community will always be here for you and you can still try again next year stronger than ever {ids.think_emoji}\n\nN.B. there are no private channels only for 42 students, the role \"42student\" exists only for convinience in case someone whats to mention all 42 students at once {ids.shipit_emoji}", timestamp=datetime.datetime.now())
-			congrats_message_embed.set_footer(text="Powered by the community", icon_url=self.client.user.avatar_url)
-			congrats_message = await channel.send(embed=congrats_message_embed)
-			await congrats_message.add_reaction(ids.school_logo_white)
 		# Add 2 attributes to self for the function on_raw_reaction_add
 		self.welcome_message = await self.client.get_channel(ids.welcome).fetch_message(welcome_message.id)
-		self.congrats_message = await self.client.get_channel(ids.welcome).fetch_message(congrats_message.id)
 
 		# Rules Channel
 		# Each time the bot starts, he counts the number of messages in the welcome channel
