@@ -16,7 +16,7 @@
 # - @commands.command(): response to a command following the pattern defined in bot.py (i.e. .<command name>)
 # - @commands.Cog.listener(): basically every other event like a message is sent or the bot starts
 
-import scripts
+from scripts.make_user_database import *
 from dotenv import load_dotenv
 import discord
 import os
@@ -55,4 +55,5 @@ if switch == branches[0]:
 else:
 	token = os.environ.get("TOKEN_DEV")
 
+create_user_database()
 client.run(token)

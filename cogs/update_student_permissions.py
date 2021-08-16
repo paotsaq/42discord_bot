@@ -22,31 +22,21 @@ def fetch_users(path_to_database):
     json_file.close()
     return loaded_dict
 
-# this is a dictionary!
-# users[coalition_id] is a list of all usernames on that given coalition
-users = fetch_users("database/coalition_users.json")
-
-match_coalition_to_id = {
-	'119': ids.jetsons,
-	'120': ids.simpsons,
-	'121': ids.flinstones
-}
-
 class AssignsRole(commands.Cog):
 	def __init__(self, client):
 		self.client = client
 
 	@commands.command()
-	async def attribute_42roles(self, ctx):
+	async def attribute_42student(self, ctx):
+		# users[coalition_id] is a list of all usernames on that given coalition
 		if(ids.staff in [x.id for x in ctx.author.roles]):
+			users = fetch_users("database/users_id_database.json")
 			await ctx.message.delete()
 			guild = self.client.get_guild(ids.guild_id)
 			for user in guild.members:
-				for team in users.keys():
-					if user.display_name in users[team]:
-						snowflake = discord.Object(match_coalition_to_id[team])
-						await user.add_roles(snowflake)
+				if user.display_name in users.keys():
+					snowflake = discord.Object(ids.student42)
+					await user.add_roles(snowflake)
 
 def setup(client):
 	client.add_cog(AssignsRole(client))
-

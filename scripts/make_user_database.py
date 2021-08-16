@@ -1,7 +1,7 @@
 # What this script does:
 # Fetches all users from the 42 API, matching the Lisboa campus; updates the database into a neat JSON
 
-from dump_to_json import dump_to_json
+from scripts.dump_to_json import *
 import requests
 from dotenv import load_dotenv
 import os
@@ -33,7 +33,7 @@ def token_handler():
 
 def get_campus_students():
     number = 1
-    res = {} 
+    res = {}
     while number == 1 or len(response.json()) != 0:
         url = f"https://api.intra.42.fr/v2/cursus_users?page[size]=100&page[number]={number}&cursus_id=21&filter[campus_id]=38"
         response = requests.get(url, headers=headers, data=payload)
@@ -56,5 +56,3 @@ def create_user_database():
     token_handler()
     res = get_campus_students()
     dump_to_json(res, "users_id_database")
-
-create_user_database()
