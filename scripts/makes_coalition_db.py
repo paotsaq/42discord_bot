@@ -59,7 +59,7 @@ def crawler():
 				return
 			info = response.json()
 			print(f"fetching page {options['page']['number']} for coalition number {coalitions.index(team) + 1}")
-			time.sleep(4)
+			time.sleep(0.3)
 			if len(info) != 0:
 				for elem in info:
 					coalition_members.append(elem['login'])

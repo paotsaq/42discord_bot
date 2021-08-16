@@ -2,10 +2,12 @@
 # listens for reactions on server;
 # if a message has n-CONST 📌 reactions, it gets pinned.
 
+#TODO CONST should be changed with moulinette input on discord
+
 import discord
 from discord.ext import commands
 
-CONST = 1
+CONST = 4
 
 class Pinned(commands.Cog):
 	def __init__(self, client):
@@ -16,8 +18,10 @@ class Pinned(commands.Cog):
 		if str(payload.emoji) == "📌":
 			channel = self.client.get_channel(payload.channel_id)
 			message = await channel.fetch_message(payload.message_id)
-			if message.reactions[0].count >= CONST:
-				await message.pin()
+			for reaction in message.reactions:
+				if reaction.emoji == "📌" and reaction.count >= CONST:
+					await message.pin()
+
 
 def setup(client):
 	client.add_cog(Pinned(client))
