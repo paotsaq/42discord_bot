@@ -24,7 +24,7 @@ from discord.ext import commands
 
 # Switch between prod and dev branches
 branches = ["prod", "dev"]
-switch = branches[1]
+switch = branches[0]
 
 # Gives the bots additionnal permissions
 # Defines the prefix for commands
