@@ -28,6 +28,8 @@ def token_handler():
 	try:
 		token = token_result.json()['access_token']
 	except KeyError:
+		with open("result", "w") as file:
+			file.write(token_result)
 		return
 	autho = f"{token_result.json()['token_type']} {token}"
 	headers = {
