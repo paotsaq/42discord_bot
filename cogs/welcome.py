@@ -79,6 +79,8 @@ class Welcome(commands.Cog):
 			message_count += 1
 		if message_count == 0:
 			await self.make_welcome_message(channel)
+		elif message_count == 1:
+			self.welcome_message = await self.client.get_channel(ids.welcome).fetch_message(783402706840190996)
 		# Rules Channel
 		# Each time the bot starts, he counts the number of messages in the welcome channel
 		# If 0, he adds the welcome message and the initial house reactions

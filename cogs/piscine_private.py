@@ -22,7 +22,7 @@ def arg_valid(arg):
 # List of past piscines. As 2 functions:
 # 1. Check if the month passed in as parameter by user is valid
 # 2. See the index of the piscine to have a unique number
-piscines = ["10/20", "11/20", "01/21", "06/21", "07/21"]
+piscines = ["10/20", "11/20", "01/21", "06/21", "08/21"]
 
 def piscine_exists(month):
 	if month in piscines:
