@@ -26,10 +26,9 @@ def token_handler():
 	global headers
 	token_result = requests.post(api_url + token_endpoint, params=payload)
 	try:
+		print(token_result)
 		token = token_result.json()['access_token']
 	except KeyError:
-		with open("result", "w") as file:
-			file.write(token_result)
 		return
 	autho = f"{token_result.json()['token_type']} {token}"
 	headers = {
