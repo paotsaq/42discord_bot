@@ -21,6 +21,7 @@ from dotenv import load_dotenv
 import discord
 import os
 from discord.ext import commands
+import logging, sys
 
 # Switch between prod and dev branches
 branches = ["prod", "dev"]
@@ -50,6 +51,24 @@ for filename in os.listdir('./cogs'):
 		client.load_extension(f'cogs.{filename[:-3]}')
 
 load_dotenv()
+
+# TODO improve this.
+# The token could be put in a command line argument;
+
+file_handler = logging.FileHandler(filename='tmp.log')
+stdout_handler = logging.StreamHandler(sys.stdout)
+handlers = [file_handler, stdout_handler]
+
+FORMAT_STRING = "[%(asctime)s] {%(filename)s:%(lineno)d}\n%(levelname)s - %(message)s"
+logging.basicConfig(
+    level=logging.INFO,
+    format=FORMAT_STRING,
+    handlers=handlers
+)
+
+logger = logging.getLogger('LOGGER_NAME')
+logging.info("Running on ~%s environment", 'production' if switch == branches[0] else 'development')
+
 if switch == branches[0]:
 	token = os.environ.get("TOKEN_PROD")
 else:
