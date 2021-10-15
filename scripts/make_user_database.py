@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 import os
 import time
 import json
+import logging
 
 load_dotenv()
 payload = {
@@ -26,8 +27,8 @@ def token_handler():
 	global headers
 	token_result = requests.post(api_url + token_endpoint, params=payload)
 	try:
-		print(token_result)
 		token = token_result.json()['access_token']
+		logging.info("Successfully obtained access token.")
 	except KeyError:
 		return
 	autho = f"{token_result.json()['token_type']} {token}"
@@ -41,7 +42,6 @@ def get_campus_students():
 	while number == 1 or len(response.json()) != 0:
 		url = f"https://api.intra.42.fr/v2/cursus_users?page[size]=100&page[number]={number}&cursus_id=21&filter[campus_id]=38"
 		response = requests.get(url, headers=headers, data=payload)
-		print(response.json())
 		new_dic = create_dictionary_from_response(response.json())
 		res.update(new_dic)
 		number += 1

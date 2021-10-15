@@ -67,6 +67,7 @@ logging.basicConfig(
 )
 
 logger = logging.getLogger('LOGGER_NAME')
+logging.info("Running on ~%s environment", 'production' if switch == branches[0] else 'development')
 
 if switch == branches[0]:
 	token = os.environ.get("TOKEN_PROD")
