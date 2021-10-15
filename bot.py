@@ -61,7 +61,7 @@ handlers = [file_handler, stdout_handler]
 
 FORMAT_STRING = "[%(asctime)s] {%(filename)s:%(lineno)d}\n%(levelname)s - %(message)s"
 logging.basicConfig(
-    level=logging.DEBUG,
+    level=logging.INFO,
     format=FORMAT_STRING,
     handlers=handlers
 )
