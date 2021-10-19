@@ -113,32 +113,35 @@ class Welcome(commands.Cog):
 	@commands.command()
 	async def kinit(self, ctx, login="404"):
 		await ctx.message.delete()
-		url = 'https://cdn.intra.42.fr/users/{}.jpg'.format(login)
-		if requests.get(url).status_code == 200:
-			# Removing the visitor role (even if he doesn't have it)
-			# Creating the attribute guild to self.client. Here guild is the server
-			self.client.guild = self.client.get_guild(ids.server)
-			role = self.client.guild.get_role(ids.visitor)
-			member = self.client.guild.get_member(ctx.message.author.id)
-			await member.remove_roles(role)
-			# Checking if user already has 42student role. If so, don't add piscineux role
-			for role in member.roles:
-				if role.id == ids.student:
-					msg = await ctx.send(f"<@!{ctx.author.id}>: Already 42 student. Login unnecessary")
-					time.sleep(3)
-					await msg.delete()
-					return
-			# Adding the piscineux role, if he does not have the student role
-			role = discord.utils.get(ctx.author.guild.roles, id=ids.piscineux)
-			await ctx.message.author.edit(nick=login)
-			await ctx.message.author.add_roles(role)
-			msg = await ctx.send(f"<@!{ctx.author.id}>: {ids.success_kid_emoji}")
-			time.sleep(3)
-			await msg.delete()
-		else:
-			msg = await ctx.send(f"<@!{ctx.author.id}>: Login not valid")
-			time.sleep(3)
-			await msg.delete()
+		possible_extensions = ['jpg', 'png']
+		for ext in possible_extensions:
+			url = f'https://cdn.intra.42.fr/users/{login}.{ext}'
+			if requests.get(url).status_code == 200:
+				print(f"kinit by {login} successful!")
+				# Removing the visitor role (even if he doesn't have it)
+				# Creating the attribute guild to self.client. Here guild is the server
+				self.client.guild = self.client.get_guild(ids.server)
+				role = self.client.guild.get_role(ids.visitor)
+				member = self.client.guild.get_member(ctx.message.author.id)
+				await member.remove_roles(role)
+				# Checking if user already has 42student role. If so, don't add piscineux role
+				for role in member.roles:
+					if role.id == ids.student:
+						msg = await ctx.send(f"<@!{ctx.author.id}>: Already 42 student. Login unnecessary")
+						time.sleep(3)
+						await msg.delete()
+						return
+				# Adding the piscineux role, if he does not have the student role
+				role = discord.utils.get(ctx.author.guild.roles, id=ids.piscineux)
+				await ctx.message.author.edit(nick=login)
+				await ctx.message.author.add_roles(role)
+				msg = await ctx.send(f"<@!{ctx.author.id}>: {ids.success_kid_emoji}")
+				time.sleep(3)
+				await msg.delete()
+				return
+		msg = await ctx.send(f"<@!{ctx.author.id}>: Login not valid")
+		time.sleep(3)
+		await msg.delete()
 
 	# Adding the role to the user based on the reaction house in clicks on
 	# Removing the role "Check Rules" to the user who react to the rules message
