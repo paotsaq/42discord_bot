@@ -25,7 +25,7 @@ import logging, sys
 
 # Switch between prod and dev branches
 branches = ["prod", "dev"]
-switch = branches[0]
+switch = branches[1]
 
 # Gives the bots additionnal permissions
 # Defines the prefix for commands
