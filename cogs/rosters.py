@@ -28,9 +28,9 @@ class Rosters(commands.Cog):
 		self.dict_loader()
 
 	def help_string(self):
-		return "roster syntax: ``.r action [activity] [user]``"
+		return "roster syntax: ``.r action [activity] [variable]``"
 
-	#TODO wrap this on dictionary
+	#TODO wrap this on a separate module?
 	def dict_loader(self):
 		try:
 			json_file = open(PATH_TO_ROSTERS_DICT, 'r')
@@ -56,8 +56,8 @@ class Rosters(commands.Cog):
 		json_file.close()
 		self.dict_loader()
 
+	# 🌊 cascading, beautiful code...not?
 	async def checks_valid_input(self, ctx, activity, action, nickname):
-		print(f'{nickname} perms: {valid_perms(ctx.author.roles)}')
 		if valid_perms(ctx.author.roles):
 			if activity is not None:
 				if activity not in self.rosters_dict.keys():
@@ -118,7 +118,8 @@ class Rosters(commands.Cog):
 		elif action == 'show':
 			await ctx.send(self.roster_printer(activity))
 		elif action in ['help', 'h']:
-			await ctx.send(f"You requested help! ``.r help``\n{self.help_string()}")
+			await ctx.send(f"You requested help! ``.r help``\n{self.help_string()}\n")
+			await ctx.send(f"The available commands are: ``{ACTIONS}``")
 
 	def roster_printer(self, activity=None):
 		if not activity:
