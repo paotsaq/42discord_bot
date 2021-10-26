@@ -36,7 +36,7 @@ class Commands(commands.Cog):
 	# To be used, only when someone has forgot to kill the bot
 	@commands.command()
 	async def stop(self, ctx):
-		if switch == branches[1]:
+		if switch == branches[1] or (switch == branches[0] and ids.staff in [x.id for x in ctx.author.roles]):
 			await ctx.channel.send("Logging out!")
 			await self.client.close()
 
