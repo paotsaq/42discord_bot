@@ -8,6 +8,7 @@ import re
 import time
 import json
 import datetime
+from logging_setup import *
 
 # Switch between prod and dev branches
 from bot import switch, branches
@@ -28,12 +29,14 @@ class AssignsRole(commands.Cog):
 
 	@commands.command()
 	async def attribute_42student(self, ctx):
+		logging.info("Deploying attribution of 42student role ⚙️ ")
 		# users[coalition_id] is a list of all usernames on that given coalition
 		if(ids.staff in [x.id for x in ctx.author.roles]):
-			users = fetch_users("database/users_id_database.json")
 			await ctx.message.delete()
+			users = fetch_users("database/users_id_database.json")
 			guild = self.client.get_guild(ids.guild_id)
 			for user in guild.members:
+				logging.info("Checking user %s\n", user.display_name)
 				if user.display_name in users.keys():
 					snowflake = discord.Object(ids.student42)
 					await user.add_roles(snowflake)
