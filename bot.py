@@ -39,7 +39,7 @@ provided_args = len(sys.argv)
 if provided_args > 2:
 	logging.error("Too many arguments provided. Enter exactly one argument.")
 	exit()
-elif provided_args == 0:
+elif provided_args == 1:
 	logging.error("Please provide an environment to work in.")
 	exit()
 
