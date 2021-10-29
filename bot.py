@@ -23,9 +23,35 @@ import os, sys
 from discord.ext import commands
 import logging_setup
 
-# Switch between prod and dev branches
-branches = ["prod", "dev"]
-switch = branches[0]
+load_dotenv()
+
+# Define environments in dictionary to allow for scaling
+environments = {
+	'prod': {
+		'Branch': 'Production',
+		'Token': 'TOKEN_PROD'},
+	'dev': {
+		'Branch': 'Development',
+		'Token': 'TOKEN_DEV',}}
+
+# Verify that only one argument was passed and exit if more than one or none.
+provided_args = len(sys.argv)
+if provided_args > 2:
+	logging.error("Too many arguments provided. Enter exactly one argument.")
+	exit()
+elif provided_args == 1:
+	logging.error("Please provide an environment to work in.")
+	exit()
+
+# Verify that the provided argument is a working environment
+# Log the environment being used and grab the matching token
+if sys.argv[1] in list(environments.keys()):
+	argument = sys.argv[1]
+	logging.info(f"Running on {environments[argument]['Branch']}")
+	token = os.environ.get(environments[argument]['Token'])
+else:
+	logging.error(f"Unrecognized environment: {sys.argv[1]}")
+	exit()
 
 # Gives the bots additionnal permissions
 # Defines the prefix for commands
@@ -49,18 +75,6 @@ async def reload(ctx, extension):
 for filename in os.listdir('./cogs'):
 	if filename.endswith('.py'):
 		client.load_extension(f'cogs.{filename[:-3]}')
-
-load_dotenv()
-
-# TODO improve this.
-# The token could be put in a command line argument;
-
-logging.info("Running on ~%s environment", 'production' if switch == branches[0] else 'development')
-
-if switch == branches[0]:
-	token = os.environ.get("TOKEN_PROD")
-else:
-	token = os.environ.get("TOKEN_DEV")
 
 create_user_database()
 client.run(token)
