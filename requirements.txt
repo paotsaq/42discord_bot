@@ -5,7 +5,6 @@ certifi==2020.12.5
 chardet==4.0.0
 discord.py==1.7.2
 httplib2==0.19.1
-idna==3.1
 multidict==5.1.0
 oauth2==1.9.0.post1
 oauth2client==4.1.3
