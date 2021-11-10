@@ -9,13 +9,8 @@ import time
 import datetime
 from discord.ext import commands
 import text_messages as tm
+from bot import ids
 
-# Switch between prod and dev branches
-from bot import switch, branches
-if switch == branches[0]:
-	import ids_prod as ids
-else:
-	import ids_dev as ids
 
 # If houses also has the visitor, it's to not over-complicate the remove on_raw_reaction_remove function
 

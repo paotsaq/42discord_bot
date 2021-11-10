@@ -3,14 +3,6 @@
 
 import discord
 from discord.ext import commands
-import datetime
-
-# Switch between prod and dev branches
-from bot import switch, branches
-if switch == branches[0]:
-	import ids_prod as ids
-else:
-	import ids_dev as ids
 
 class CodeFormat(commands.Cog):
 	def __init__(self, client):

@@ -46,12 +46,18 @@ elif provided_args == 1:
 # Verify that the provided argument is a working environment
 # Log the environment being used and grab the matching token
 if sys.argv[1] in list(environments.keys()):
-	argument = sys.argv[1]
-	logging.info(f"Running on {environments[argument]['Branch']}")
-	token = os.environ.get(environments[argument]['Token'])
+	environment = sys.argv[1]
+	logging.info(f"Running on {environments[environment]['Branch']}")
+	token = os.environ.get(environments[environment]['Token'])
 else:
 	logging.error(f"Unrecognized environment: {sys.argv[1]}")
 	exit()
+
+# defines the appropriate id's for each environment
+if environment == 'prod':
+	import ids_prod as ids
+else:
+	import ids_dev as ids
 
 # Gives the bots additionnal permissions
 # Defines the prefix for commands

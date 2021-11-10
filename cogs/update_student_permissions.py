@@ -11,11 +11,7 @@ import datetime
 from logging_setup import *
 
 # Switch between prod and dev branches
-from bot import switch, branches
-if switch == branches[0]:
-	import ids_prod as ids
-else:
-	import ids_dev as ids
+from bot import ids
 
 def fetch_users(path_to_database):
     json_file = open(path_to_database, 'r')
