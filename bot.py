@@ -27,34 +27,25 @@ load_dotenv()
 
 # Define environments in dictionary to allow for scaling
 environments = {
-	'prod': {
+	'PROD': {
 		'Branch': 'Production',
 		'Token': 'TOKEN_PROD'},
-	'dev': {
+	'DEV': {
 		'Branch': 'Development',
 		'Token': 'TOKEN_DEV',}}
 
-# Verify that only one argument was passed and exit if more than one or none.
-provided_args = len(sys.argv)
-if provided_args > 2:
-	logging.error("Too many arguments provided. Enter exactly one argument.")
-	exit()
-elif provided_args == 1:
-	logging.error("Please provide an environment to work in.")
-	exit()
-
+current_env = os.getenv('ENV')
 # Verify that the provided argument is a working environment
 # Log the environment being used and grab the matching token
-if sys.argv[1] in list(environments.keys()):
-	environment = sys.argv[1]
-	logging.info(f"Running on {environments[environment]['Branch']}")
-	token = os.environ.get(environments[environment]['Token'])
+if current_env in list(environments.keys()):
+	logging.info(f"Running on {environments[current_env]['Branch']}")
+	token = os.environ.get(environments[current_env]['Token'])
 else:
-	logging.error(f"Unrecognized environment: {sys.argv[1]}")
+	logging.error(f"Unrecognized environment: {current_env}")
 	exit()
 
 # defines the appropriate id's for each environment
-if environment == 'prod':
+if current_env == 'PROD':
 	import ids_prod as ids
 else:
 	import ids_dev as ids
