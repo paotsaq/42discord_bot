@@ -2,20 +2,17 @@
 # awaits for a trigger to build new user database
 # after getting the database, assigns permissions to view cursus channels
 
+import logging
 import discord
-from scripts.make_user_database import *
 from discord.ext import commands
-import re
-import time
+import os.path
 import json
-import datetime
-from logging_setup import *
 
 # Switch between prod and dev branches
 from bot import ids
 
-def fetch_users(path_to_database):
-    json_file = open(path_to_database, 'r')
+def get_database(path_to_database):
+    json_file = open(path_to_database) 
     loaded_dict = json.load(json_file)
     json_file.close()
     return loaded_dict
@@ -27,14 +24,11 @@ class AssignsRole(commands.Cog):
     @commands.command()
     async def attribute_42student(self, ctx):
         logging.info("Deploying attribution of 42student role ⚙️ ")
-        # users[coalition_id] is a list of all usernames on that given coalition
-        if(ids.staff in [x.id for x in ctx.author.roles]):
-            await ctx.message.delete()
-            try: 
-                users = fetch_users("./users_id_database.json")
-            except FileNotFoundError:
-                create_user_database()
-                users = fetch_users("./users_id_database.json")
+        if ids.staff in [x.id for x in ctx.author.roles]:
+            if not os.path.exists('./users_id_database.json'):
+                logging.info("Database is not ready! 🚩")
+                return
+            users = get_database('./users_id_database.json')
             guild = self.client.get_guild(ids.guild_id)
             for user in guild.members:
                 logging.info("Checking user %s\n", user.display_name)
