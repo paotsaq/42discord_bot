@@ -3,6 +3,7 @@
 # after getting the database, assigns permissions to view cursus channels
 
 import discord
+from scripts.make_user_database import *
 from discord.ext import commands
 import re
 import time
@@ -29,7 +30,11 @@ class AssignsRole(commands.Cog):
 		# users[coalition_id] is a list of all usernames on that given coalition
 		if(ids.staff in [x.id for x in ctx.author.roles]):
 			await ctx.message.delete()
-			users = fetch_users("./users_id_database.json")
+            try: 
+                users = fetch_users("./users_id_database.json")
+            except FileNotFoundError:
+                create_user_database()
+                users = fetch_users("./users_id_database.json")
 			guild = self.client.get_guild(ids.guild_id)
 			for user in guild.members:
 				logging.info("Checking user %s\n", user.display_name)

@@ -16,7 +16,7 @@
 # - @commands.command(): response to a command following the pattern defined in bot.py (i.e. .<command name>)
 # - @commands.Cog.listener(): basically every other event like a message is sent or the bot starts
 
-from scripts.make_user_database import *
+import logging
 from dotenv import load_dotenv
 import discord
 import os, sys
@@ -73,5 +73,4 @@ for filename in os.listdir('./cogs'):
 	if filename.endswith('.py'):
 		client.load_extension(f'cogs.{filename[:-3]}')
 
-create_user_database()
 client.run(token)
