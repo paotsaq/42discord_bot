@@ -16,7 +16,7 @@ payload = {
 		"client_id": os.environ.get("UID_ID"),
 		"client_secret": os.environ.get("SECRET"),
 		"scope": "public"
-	}
+}
 
 api_url = "https://api.intra.42.fr/"
 token_endpoint = "oauth/token"

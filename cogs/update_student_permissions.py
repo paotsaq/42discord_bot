@@ -29,7 +29,7 @@ class AssignsRole(commands.Cog):
 		# users[coalition_id] is a list of all usernames on that given coalition
 		if(ids.staff in [x.id for x in ctx.author.roles]):
 			await ctx.message.delete()
-			users = fetch_users("database/users_id_database.json")
+			users = fetch_users("./users_id_database.json")
 			guild = self.client.get_guild(ids.guild_id)
 			for user in guild.members:
 				logging.info("Checking user %s\n", user.display_name)
