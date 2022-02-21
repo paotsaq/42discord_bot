@@ -21,26 +21,26 @@ def fetch_users(path_to_database):
     return loaded_dict
 
 class AssignsRole(commands.Cog):
-	def __init__(self, client):
-		self.client = client
+    def __init__(self, client):
+        self.client = client
 
-	@commands.command()
-	async def attribute_42student(self, ctx):
-		logging.info("Deploying attribution of 42student role ⚙️ ")
-		# users[coalition_id] is a list of all usernames on that given coalition
-		if(ids.staff in [x.id for x in ctx.author.roles]):
-			await ctx.message.delete()
+    @commands.command()
+    async def attribute_42student(self, ctx):
+        logging.info("Deploying attribution of 42student role ⚙️ ")
+        # users[coalition_id] is a list of all usernames on that given coalition
+        if(ids.staff in [x.id for x in ctx.author.roles]):
+            await ctx.message.delete()
             try: 
                 users = fetch_users("./users_id_database.json")
             except FileNotFoundError:
                 create_user_database()
                 users = fetch_users("./users_id_database.json")
-			guild = self.client.get_guild(ids.guild_id)
-			for user in guild.members:
-				logging.info("Checking user %s\n", user.display_name)
-				if user.display_name in users.keys():
-					snowflake = discord.Object(ids.student42)
-					await user.add_roles(snowflake)
+            guild = self.client.get_guild(ids.guild_id)
+            for user in guild.members:
+                logging.info("Checking user %s\n", user.display_name)
+                if user.display_name in users.keys():
+                    snowflake = discord.Object(ids.student42)
+                    await user.add_roles(snowflake)
 
 def setup(client):
-	client.add_cog(AssignsRole(client))
+    client.add_cog(AssignsRole(client))
